@@ -194,7 +194,33 @@ export function LetterStack() {
 
   if (!IS_DEV && (!letters || isLoading))
     return (
-      <div className="aspect-a4 my-8 mx-auto max-w-[450px] w-full md:h-80 bg-border-primary animate-pulse rounded-lg"></div>
+      <div className="relative h-72 md:h-96 md:w-[512px] w-full flex flex-col justify-center items-center">
+        {[0, 1, 2].map((index) => {
+          const offsetY = index * -STACK_OFFSET_Y;
+          const scale = 1 - index * STACK_SCALE_STEP;
+
+          return (
+            <div
+              key={index}
+              style={{
+                zIndex: 3 - index,
+                top: "50%",
+                left: "50%",
+                transform: `translate(-50%, calc(-50% + ${offsetY}px)) scale(${scale})`,
+              }}
+              className="absolute rounded-xl md:max-w-[450px] aspect-a4 w-full overflow-hidden border border-border-primary bg-surface-primary"
+            >
+              <div className="h-full w-full animate-pulse p-6 flex flex-col gap-4">
+                <div className="h-4 w-28 rounded bg-border-primary" />
+                <div className="h-3 w-full rounded bg-border-primary" />
+                <div className="h-3 w-11/12 rounded bg-border-primary" />
+                <div className="h-3 w-10/12 rounded bg-border-primary" />
+                <div className="mt-auto h-3 w-24 rounded bg-border-primary" />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     );
 
   if (letterOrder.length === 0)

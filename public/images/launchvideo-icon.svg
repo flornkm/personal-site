@@ -1,19 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="256" height="256" fill="none">
+  <style>
+    .shell { fill: url(#lv-bg); stroke: #ffffff; stroke-opacity: 0.1 }
+    .cast { flood-opacity: 0.45 }
+    @media (prefers-color-scheme: dark) {
+      .shell { fill: url(#lv-bg-dark); stroke-opacity: 0.2 }
+      .cast { flood-opacity: 0.6 }
+    }
+  </style>
   <defs>
     <linearGradient id="lv-bg" x1="0.15" y1="0" x2="0.8" y2="1">
       <stop offset="0" stop-color="#4a4a4a"/>
       <stop offset="1" stop-color="#303030"/>
+    </linearGradient>
+    <linearGradient id="lv-bg-dark" x1="0.15" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#525252"/>
+      <stop offset="1" stop-color="#383838"/>
     </linearGradient>
     <linearGradient id="lv-face" x1="0.1" y1="0" x2="0.5" y2="1">
       <stop offset="0" stop-color="#f6f8f9"/>
       <stop offset="0.5" stop-color="#d3dadd"/>
       <stop offset="1" stop-color="#aab3b6"/>
     </linearGradient>
+    <filter id="lv-cast" x="-15%" y="-20%" width="130%" height="160%">
+      <feDropShadow class="cast" dx="0" dy="20" stdDeviation="18" flood-color="#000000"/>
+    </filter>
   </defs>
 
-  <rect x="25" y="25" width="910" height="910" rx="204" fill="url(#lv-bg)" stroke="#8f8f8f" stroke-width="10"/>
+  <rect class="shell" x="26" y="26" width="908" height="908" rx="204" stroke-width="8"/>
 
-  <g fill="url(#lv-face)">
+  <g fill="url(#lv-face)" filter="url(#lv-cast)">
     <rect x="110" y="285" width="470" height="140" rx="26"/>
     <rect x="624" y="285" width="232" height="140" rx="26"/>
     <rect x="202" y="505" width="504" height="140" rx="26"/>

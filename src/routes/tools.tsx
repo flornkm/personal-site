@@ -27,7 +27,7 @@ function GradientBorderDemo() {
 }
 
 function LaunchVideoDemo() {
-  /* Hand-rebuilt vector of the product's app icon — the original is a 3D render this repo
+  /* Simplified vector of the product's app icon — the original is a 3D render this repo
      doesn't have the source for, so this is a likeness, not the shipped asset. Replace it
      if the real file ever lands here. */
   return <img src="/images/launchvideo-icon.svg" alt="" className="size-16" />;

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="256" height="256" fill="none">
+  <style>
+    .shell { fill: url(#lv-shell-light); stroke: #000000; stroke-opacity: 0.08 }
+    .plate { fill: url(#lv-plate-dark) }
+    .cast-wide { flood-color: #000000; flood-opacity: 0.42 }
+    .cast-tight { flood-color: #000000; flood-opacity: 0.32 }
+    @media (prefers-color-scheme: dark) {
+      .shell { fill: url(#lv-shell-dark); stroke: #ffffff; stroke-opacity: 0.1 }
+      .plate { fill: url(#lv-plate-light) }
+      .cast-wide { flood-opacity: 0.6 }
+      .cast-tight { flood-opacity: 0.45 }
+    }
+  </style>
+  <defs>
+    <linearGradient id="lv-shell-light" x1="0.15" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ededed"/>
+      <stop offset="1" stop-color="#cfcfcf"/>
+    </linearGradient>
+    <linearGradient id="lv-shell-dark" x1="0.15" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#4a4a4a"/>
+      <stop offset="1" stop-color="#303030"/>
+    </linearGradient>
+    <linearGradient id="lv-plate-light" x1="0.1" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#f6f8f9"/>
+      <stop offset="0.5" stop-color="#d3dadd"/>
+      <stop offset="1" stop-color="#aab3b6"/>
+    </linearGradient>
+    <linearGradient id="lv-plate-dark" x1="0.1" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#3e3e3e"/>
+      <stop offset="0.5" stop-color="#2a2a2a"/>
+      <stop offset="1" stop-color="#171717"/>
+    </linearGradient>
+    <filter id="lv-cast" x="-25%" y="-30%" width="150%" height="200%">
+      <feDropShadow class="cast-wide" dx="0" dy="34" stdDeviation="30"/>
+      <feDropShadow class="cast-tight" dx="0" dy="10" stdDeviation="9"/>
+    </filter>
+  </defs>
+
+  <rect class="shell" x="26" y="26" width="908" height="908" rx="204" stroke-width="8"/>
+
+  <g class="plate" filter="url(#lv-cast)">
+    <rect x="110" y="285" width="470" height="140" rx="26"/>
+    <rect x="624" y="285" width="232" height="140" rx="26"/>
+    <rect x="202" y="505" width="504" height="140" rx="26"/>
+  </g>
+</svg>

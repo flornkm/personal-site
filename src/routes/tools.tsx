@@ -1,7 +1,6 @@
 import { absoluteUrl, canonicalLink } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { IconArrowUpRight } from "central-icons/IconArrowUpRight";
-import { IconPlay } from "central-icons-filled/IconPlay";
 import type { ComponentType } from "react";
 
 function DitherDemo() {
@@ -28,11 +27,10 @@ function GradientBorderDemo() {
 }
 
 function LaunchVideoDemo() {
-  return (
-    <div className="flex h-9 w-16 items-center justify-center rounded-lg bg-surface">
-      <IconPlay className="size-4 text-tertiary" />
-    </div>
-  );
+  /* Hand-rebuilt vector of the product's app icon — the original is a 3D render this repo
+     doesn't have the source for, so this is a likeness, not the shipped asset. Replace it
+     if the real file ever lands here. */
+  return <img src="/images/launchvideo-icon.svg" alt="" className="size-16" />;
 }
 
 function ShadowDemo() {

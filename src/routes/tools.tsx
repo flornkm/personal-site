@@ -1,6 +1,7 @@
 import { absoluteUrl, canonicalLink } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { IconArrowUpRight } from "central-icons/IconArrowUpRight";
+import { IconPlay } from "central-icons-filled/IconPlay";
 import type { ComponentType } from "react";
 
 function DitherDemo() {
@@ -26,6 +27,14 @@ function GradientBorderDemo() {
   );
 }
 
+function LaunchVideoDemo() {
+  return (
+    <div className="flex h-9 w-16 items-center justify-center rounded-lg bg-surface">
+      <IconPlay className="size-4 text-tertiary" />
+    </div>
+  );
+}
+
 function ShadowDemo() {
   /* The plugin's ring flips to white via light-dark(), which reads the page's declared
      color-scheme — this site never declares one, so it would stay black (invisible on the
@@ -42,6 +51,11 @@ const TOOLS: { name: string; href: string; demo: ComponentType }[] = [
     name: "Gradient Border",
     href: "https://gradient-border.floriankiem.com",
     demo: GradientBorderDemo,
+  },
+  {
+    name: "Launch Video",
+    href: "https://www.launchvideo.dev",
+    demo: LaunchVideoDemo,
   },
   { name: "Shadow", href: "https://shadow.floriankiem.com", demo: ShadowDemo },
 ];

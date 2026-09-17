@@ -44,6 +44,20 @@ function ShadowDemo() {
   );
 }
 
+function SonaDemo() {
+  /* Sona's mark, traced from the app's own login screen (public/images/sona/login.webp):
+     a squircle with a circular cutout. Inline rather than a file in public/images so the
+     fill tracks the theme token — the site's other image assets can't. */
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden="true" className="size-16 fill-primary">
+      <path
+        fillRule="evenodd"
+        d="M0 30A30 30 0 0 1 30 0h40a30 30 0 0 1 30 30v40a30 30 0 0 1-30 30H30A30 30 0 0 1 0 70V30Zm50-15a35 35 0 1 0 0 70 35 35 0 0 0 0-70Z"
+      />
+    </svg>
+  );
+}
+
 const TOOLS: { name: string; href: string; demo: ComponentType }[] = [
   { name: "Dither", href: "https://dither.floriankiem.com", demo: DitherDemo },
   {
@@ -57,6 +71,7 @@ const TOOLS: { name: string; href: string; demo: ComponentType }[] = [
     demo: LaunchVideoDemo,
   },
   { name: "Shadow", href: "https://shadow.floriankiem.com", demo: ShadowDemo },
+  { name: "Sona", href: "https://sona.wtf", demo: SonaDemo },
 ];
 
 export const Route = createFileRoute("/tools")({

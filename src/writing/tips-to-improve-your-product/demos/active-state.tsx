@@ -113,7 +113,7 @@ export function ActiveState() {
   const [press, setPress] = useState<Press>("none");
 
   return (
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="flex justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
         {/* Same floor and the same control-below-the-subject stack as the switch figure, so the two
             sit at the same weight in the column. Equal 1fr rows above and below the button hold it

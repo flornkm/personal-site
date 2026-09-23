@@ -276,6 +276,45 @@ body:has([data-block-scroll]) {
     calc(100% - var(--scroll-mask-size)) 100%;
 }
 
+/* scroll-mask-x: the horizontal twin, for an `overflow-x-auto` row. */
+@property --scroll-mask-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --scroll-mask-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@utility scroll-mask-x {
+  --scroll-mask-size: 3rem;
+  --scroll-mask-left: 0px;
+  --scroll-mask-right: 0px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-mask-left),
+    black calc(100% - var(--scroll-mask-right)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-mask-left),
+    black calc(100% - var(--scroll-mask-right)),
+    transparent 100%
+  );
+  animation:
+    scroll-mask-left linear both,
+    scroll-mask-right linear both;
+  animation-timeline: scroll(self x), scroll(self x);
+  animation-range:
+    0 var(--scroll-mask-size),
+    calc(100% - var(--scroll-mask-size)) 100%;
+}
+
 /* hit-area-<n>: invisibly extends a link's click/hover target by n px per
    side without affecting layout. When neighboring targets overlap (stacks
    with gaps under 2n px), the later sibling wins the shared zone. */
@@ -302,6 +341,23 @@ body:has([data-block-scroll]) {
   }
   to {
     --scroll-mask-bottom: 0px;
+  }
+}
+
+@keyframes scroll-mask-left {
+  from {
+    --scroll-mask-left: 0px;
+  }
+  to {
+    --scroll-mask-left: var(--scroll-mask-size);
+  }
+}
+@keyframes scroll-mask-right {
+  from {
+    --scroll-mask-right: var(--scroll-mask-size);
+  }
+  to {
+    --scroll-mask-right: 0px;
   }
 }
 

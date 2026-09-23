@@ -74,9 +74,13 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
 
         <MediaMuteButton className={iconButtonClass}>
           <IconMute slot="off" ariaHidden />
-          <IconVolumeFull slot="low" ariaHidden />
-          <IconVolumeFull slot="medium" ariaHidden />
-          <IconVolumeFull slot="high" ariaHidden />
+          {/* Raw, not masked: media-chrome shows one slot and display:nones the rest, and the
+              masked build shares a single <mask> id across every copy of an icon. WebKit
+              resolves the visible copy's mask to the first, hidden one and paints a solid
+              square instead. */}
+          <IconVolumeFull slot="low" mode="raw" ariaHidden />
+          <IconVolumeFull slot="medium" mode="raw" ariaHidden />
+          <IconVolumeFull slot="high" mode="raw" ariaHidden />
         </MediaMuteButton>
 
         <MediaTimeDisplay
@@ -101,8 +105,8 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
         />
 
         <MediaPipButton className={iconButtonClass}>
-          <IconPictureInPicture slot="enter" ariaHidden />
-          <IconPictureInPicture slot="exit" ariaHidden />
+          <IconPictureInPicture slot="enter" mode="raw" ariaHidden />
+          <IconPictureInPicture slot="exit" mode="raw" ariaHidden />
         </MediaPipButton>
 
         <MediaFullscreenButton className={iconButtonClass}>

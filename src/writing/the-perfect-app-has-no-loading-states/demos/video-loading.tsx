@@ -54,8 +54,10 @@ export function VideoLoading() {
   }
 
   return (
-    <figure className="not-prose @container mx-auto my-10 font-pretendard md:max-w-[460px]">
-      <div className="grid gap-4 @md:grid-cols-2">
+    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard lg:max-w-[460px]">
+      {/* Side by side at every width: the comparison only works with both in view, and two
+          portrait players fit a phone. */}
+      <div className="grid grid-cols-2 gap-3 md:gap-4">
         <Player label="Spinner until sharp">
           <SpinnerPlayer run={run} loaded={elapsed >= LOAD_MS} />
         </Player>
@@ -103,7 +105,7 @@ function Player({ label, children }: { label: string; children: React.ReactNode 
       >
         {children}
       </div>
-      <p className="mt-3 text-center text-[13px] text-tertiary">{label}</p>
+      <p className="mt-3 text-center text-[12px] text-tertiary md:text-[13px]">{label}</p>
     </div>
   );
 }

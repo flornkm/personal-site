@@ -113,7 +113,7 @@ export function StackingOrder() {
     // its buttons and rules.
     // 520px against the article's 460px text column: wide enough to read as a figure rather than
     // an inline block, narrow enough that it still belongs to the column it interrupts.
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       {/* Outline only, no fill: the panels bring their own recessed tray, so a second grey box
           around it just stacks two nearly identical greys. The dark hairline is lighter than the
           one images carry — with no fill behind it there is nothing to hold it back, and at

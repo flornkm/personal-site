@@ -17,13 +17,13 @@ import type { ComponentPropsWithoutRef, ComponentType, RefObject } from "react";
 
 // The text column's width plus one padding on each side. Keep in step with the article
 // route's max-w on prose children.
-const COLUMN = "md:max-w-[calc(460px+2rem)]";
+const COLUMN = "lg:max-w-[calc(460px+2rem)]";
 
 export function CodeBlock({ className, children, ...props }: ComponentPropsWithoutRef<"pre">) {
   const pre = useRef<HTMLPreElement>(null);
   return (
-    // On phones the page gutter is 24px, so the 16px overhang still fits inside it.
-    <div className={cn("not-prose relative my-6 max-md:-mx-4 md:mx-auto", COLUMN)}>
+    // Below lg the column has at least 24px beside it, so the 16px overhang always fits.
+    <div className={cn("not-prose relative my-6 max-lg:-mx-4 lg:mx-auto", COLUMN)}>
       <pre
         ref={pre}
         {...props}

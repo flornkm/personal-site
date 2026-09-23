@@ -1,4 +1,5 @@
 import Button from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { IconArrowRotateClockwise } from "central-icons/IconArrowRotateClockwise";
 import { motion, useReducedMotion } from "motion/react";
 import { useRef, useState } from "react";
@@ -19,6 +20,8 @@ const LOAD_MS = 2400;
 const PART_MS = [1400, LOAD_MS];
 // How long the client app takes to boot and paint its own shell after a reload.
 const SHELL_MS = 25;
+// Narrower than the row so the next window peeks in and shows there is more to the side.
+const SLIDE = "@max-lg:w-[min(20rem,78cqw)] @max-lg:shrink-0 @max-lg:snap-start";
 
 export function LoadingStrategies() {
   // How many of the page's parts have arrived. Full is the resting state, so the page is
@@ -47,23 +50,38 @@ export function LoadingStrategies() {
   const allReady = PART_MS.map(() => true);
 
   return (
-    <figure className="not-prose @container mx-auto my-10 font-pretendard md:max-w-[760px]">
-      <div className="grid gap-4 @lg:grid-cols-3">
-        <Browser
-          label="Server rendered"
-          run={run}
-          progress={loading}
-          progressMs={LOAD_MS}
-          hidden={loading}
-        >
-          <GroceriesPage ready={allReady} />
-        </Browser>
-        <Browser label="Root spinner" hidden={loading} overlay={loading && <Spinner />}>
-          <GroceriesPage ready={allReady} />
-        </Browser>
-        <Browser label="Skeletons">
-          <GroceriesPage ready={skeletonReady} shell={shellReady} />
-        </Browser>
+    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard lg:max-w-[760px]">
+      {/* Below @lg the three windows don't fit side by side, so they become a snap row that
+          scrolls sideways, each edge fading only while a window is hidden past it. The vertical
+          padding is cancelled by the negative margin: it exists so the row's overflow clipping
+          leaves room for the windows' shadows. */}
+      <div
+        className={cn(
+          "grid gap-4 @lg:grid-cols-3",
+          "@max-lg:-my-2 @max-lg:flex @max-lg:snap-x @max-lg:snap-mandatory @max-lg:scroll-px-4 @max-lg:overflow-x-auto @max-lg:px-4 @max-lg:py-2 @max-lg:scroll-mask-x",
+        )}
+      >
+        <div className={SLIDE}>
+          <Browser
+            label="Server rendered"
+            run={run}
+            progress={loading}
+            progressMs={LOAD_MS}
+            hidden={loading}
+          >
+            <GroceriesPage ready={allReady} />
+          </Browser>
+        </div>
+        <div className={SLIDE}>
+          <Browser label="Root spinner" hidden={loading} overlay={loading && <Spinner />}>
+            <GroceriesPage ready={allReady} />
+          </Browser>
+        </div>
+        <div className={SLIDE}>
+          <Browser label="Skeletons">
+            <GroceriesPage ready={skeletonReady} shell={shellReady} />
+          </Browser>
+        </div>
       </div>
 
       <div className="mt-8 flex justify-center">

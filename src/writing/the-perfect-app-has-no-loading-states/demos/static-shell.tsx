@@ -42,7 +42,7 @@ export function StaticShell() {
   const shellVisible = mode === "shell" || loaded;
 
   return (
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="relative flex min-h-[24rem] items-center justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
         {/* The app's window is the viewport and is always there; what changes is what the app
             has put inside it. Arriving content fades in; on replay it is gone at once. */}

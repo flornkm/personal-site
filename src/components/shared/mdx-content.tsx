@@ -218,7 +218,7 @@ function Anchor({ href, ...props }: ComponentProps<"a">) {
 
 export function MobileImages({ images }: { images: { src: string; alt: string }[] }) {
   return (
-    <div className="not-prose my-8">
+    <div className="not-prose my-8 max-lg:-mx-4">
       <div className="flex gap-3 bg-secondary p-2 py-4 md:py-12 md:p-10">
         {images.map((img) => (
           <div key={img.src} className="flex-1 min-w-0 px-2 @container">

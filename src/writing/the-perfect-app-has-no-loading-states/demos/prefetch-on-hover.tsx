@@ -24,7 +24,7 @@ const PREFETCH_MS = 100;
 
 export function PrefetchOnHover() {
   return (
-    <figure className="not-prose @container mx-auto my-10 font-pretendard md:max-w-[560px]">
+    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard lg:max-w-[560px]">
       <div className="grid gap-4 @md:grid-cols-2">
         <NavigatingBrowser label="Fetch on click" prefetch={false} />
         <NavigatingBrowser label="Prefetch on hover" prefetch />

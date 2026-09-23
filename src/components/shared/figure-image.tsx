@@ -49,17 +49,19 @@ export function FigureImage({
         className={cn("not-prose mx-auto my-8 first:mt-0 last:mb-0", isDiagram && "max-w-[640px]")}
         style={width ? { maxWidth: width } : undefined}
       >
-        {/* On mobile the panel breaks out of ancestor padding to line up with the body
-            text's 24px side padding (the root layout's px-6); from md up it's a normal block.
-            The breakout is clamped to `width` so a capped figure stays capped instead of
-            being blown up to the full viewport and centred off-screen. */}
+        {/* Below lg the panel sits 16px proud of the text on each side, like every figure and
+            code block: on phones it breaks out of ancestor padding to 8px from the viewport edge
+            (the root layout's px-6 minus the overhang), on tablets it overhangs the column by
+            its own padding. From lg up it's a normal block. The breakout is clamped to `width`
+            so a capped figure stays capped instead of being blown up and centred off-screen. */}
         <Dialog.Trigger
           aria-label={alt ? `Open image: ${alt}` : "Open image"}
           style={{ "--figure-w": width ? `${width}px` : "100vw" } as CSSProperties}
           className={cn(
             "block w-full cursor-zoom-in appearance-none text-left outline-none",
             "focus-visible:ring-2 focus-visible:ring-default",
-            "max-md:ml-[50%] max-md:w-[min(calc(100vw-48px),var(--figure-w))] max-md:-translate-x-1/2",
+            "max-md:ml-[50%] max-md:w-[min(calc(100vw-16px),var(--figure-w))] max-md:-translate-x-1/2",
+            "md:max-lg:-mx-4 md:max-lg:w-[calc(100%+2rem)]",
           )}
         >
           <div
@@ -98,10 +100,11 @@ export function FigureImage({
             )}
           </div>
         </Dialog.Trigger>
-        {/* Mirrors the body text column: inset via the same margins on mobile (see the prose
-            rules in routes/writing/$id.tsx), centred 460px from md up. */}
+        {/* Mirrors the body text column, so the caption's left edge is the text's left edge
+            while the image above it overhangs: full column below lg (see the prose rules in
+            routes/writing/$id.tsx), centred 460px from lg up. */}
         {alt && (
-          <figcaption className="mt-4 font-serif text-[11px] font-normal italic text-primary md:mx-auto md:max-w-[460px]">
+          <figcaption className="mt-4 font-serif text-[11px] font-normal italic text-primary lg:mx-auto lg:max-w-[460px]">
             {alt}
             {sources && <FootnoteRefs sources={sources} />}
           </figcaption>

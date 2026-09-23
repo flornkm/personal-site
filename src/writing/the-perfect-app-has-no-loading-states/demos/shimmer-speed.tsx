@@ -90,7 +90,7 @@ export function ShimmerSpeed() {
   }, [reduceMotion]);
 
   return (
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       {/* Same stage as the figures in the tips article. The control is pinned to the floor
           rather than given a grid row, so the card centres on the whole stage. */}
       <div className="relative flex min-h-[18rem] items-center justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">

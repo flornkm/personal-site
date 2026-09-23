@@ -1,3 +1,5 @@
+import { queryOptions } from "@tanstack/react-query";
+
 export type RoutePath = { d: string; w: number; h: number };
 
 export type Run = {
@@ -209,3 +211,12 @@ export async function fetchRuns(): Promise<Run[]> {
   const data = (await res.json()) as { runs: Run[] };
   return data.runs;
 }
+
+// Shared by the feed and the route loader's hover prefetch, so both read the same cache entry.
+// Fresh for as long as the API's own edge cache (s-maxage=300): a prefetch on hover must still
+// count as fresh when the page mounts a moment later, or the feed would fetch a second time.
+export const runsQueryOptions = queryOptions({
+  queryKey: ["runs"],
+  queryFn: fetchRuns,
+  staleTime: 5 * 60 * 1000,
+});

@@ -25,4 +25,8 @@ export const videoManifest: Record<string, VideoManifestEntry> = {
   "/videos/superpower/protocol-reveal.webm": { width: 2520, height: 1500, thumbhash: "AAgCBIDw8PDh4eFLS4cAAAAAAA==" },
   "/videos/superpower/scroll-effect.mp4": { width: 2520, height: 1500, thumbhash: "PPgFBIDWWIhwfYWCfILi4JjvtQ==" },
   "/videos/superpower/scroll-effect.webm": { width: 2520, height: 1500, thumbhash: "PPgFBIDWWIhwfYWCfILj4JjvtQ==" },
+  "/videos/writing/loading-states/clip-1080.mp4": { width: 1080, height: 1920, thumbhash: "necNRAao+IWXd5doeZiFcGUIRA==" },
+  "/videos/writing/loading-states/clip-240.mp4": { width: 240, height: 426, thumbhash: "necNRAao+IWXd5doeZiFcGUIRQ==" },
+  "/videos/writing/loading-states/clip-480.mp4": { width: 480, height: 854, thumbhash: "necNRAao+IWXd5doeZiFcGUIRQ==" },
+  "/videos/writing/loading-states/clip-720.mp4": { width: 720, height: 1280, thumbhash: "necNRAao+IWXd5doeZiFcGUIRQ==" },
 };

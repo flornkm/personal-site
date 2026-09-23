@@ -1,6 +1,7 @@
 import { Body2 } from "@/components/design-system/body";
 import { H3 } from "@/components/design-system/heading";
 import { Link } from "@/components/ui/link";
+import Skeleton from "@/components/ui/skeleton";
 import { PostIcon } from "@/features/writing/components/post-icon";
 import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
 import { getContent } from "@/lib/mdx";
@@ -14,16 +15,21 @@ type WritingListItem = { slug: string; title: string; date: string; type: string
 
 const DESCRIPTION = "Writing contains thoughts, ideas, and experiences from Florian.";
 
+// Written but not ready to be listed yet. The post stays reachable at its own URL.
+const UNLISTED_SLUGS = new Set(["software-that-looks-better-used"]);
+
 // Plain (non-server) function: getContent reads from a bundled eager glob, so it runs on
 // the client too. Wrapping it in createServerFn would force an RPC round-trip on every
 // client-side navigation — the reason /writing felt slow to open.
 function getWritingItems(): WritingListItem[] {
-  const list = getContent("writing").map((item) => ({
-    slug: item.slug,
-    title: String(item.title ?? item.slug),
-    type: String(item.type ?? ""),
-    date: String(item.date ?? ""),
-  }));
+  const list = getContent("writing")
+    .filter((item) => !UNLISTED_SLUGS.has(item.slug))
+    .map((item) => ({
+      slug: item.slug,
+      title: String(item.title ?? item.slug),
+      type: String(item.type ?? ""),
+      date: String(item.date ?? ""),
+    }));
 
   // Newest first. Live posts (e.g. runs) carry no frontmatter date so they sort last,
   // but render in their own "Live" section first regardless of position.
@@ -96,7 +102,7 @@ function PostDateSkeleton() {
   // h-5 matches Body2's text-sm line box so the date resolving in causes no shift.
   return (
     <div className="flex h-5 items-center">
-      <div className="h-3.5 w-24 animate-pulse rounded-sm bg-tertiary" />
+      <Skeleton className="h-3.5 w-24" />
     </div>
   );
 }

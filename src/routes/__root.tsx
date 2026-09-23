@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { HeadContent, Outlet, Scripts, createRootRoute, useLocation } from "@tanstack/react-router";
 import { Analytics } from "@vercel/analytics/react";
 import { MotionConfig } from "motion/react";
@@ -11,11 +11,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Button, { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
 import ScissorsCursor, { CutText } from "@/components/shared/scissors-cursor";
+import { queryClient } from "@/lib/query-client";
 import { initSelectionDots } from "@/lib/selection-dots";
 import { absoluteUrl } from "@/lib/site";
 import { structuredDataJson } from "@/lib/structured-data";
-
-const queryClient = new QueryClient();
 
 if (typeof window !== "undefined") {
   console.info(

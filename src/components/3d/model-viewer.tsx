@@ -1,3 +1,4 @@
+import Skeleton from "@/components/ui/skeleton";
 import React, { Suspense, useEffect, useState } from "react";
 
 interface CanvasProps {
@@ -177,7 +178,7 @@ export function ModelViewer({
       className={`relative cursor-grab active:cursor-grabbing border-secondary rounded-lg overflow-hidden ${className}`}
       style={{ width, height }}
     >
-      <div className="absolute inset-0 -z-10 bg-border-primary animate-pulse" />
+      <Skeleton className="absolute inset-0 -z-10 rounded-none" />
       <Suspense>
         <Scene
           src={src}

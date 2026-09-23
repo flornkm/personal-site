@@ -2,7 +2,9 @@ import { H1 } from "@/components/design-system/heading";
 import { useMdxContent } from "@/components/shared/mdx-content";
 import { Link } from "@/components/ui/link";
 import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
+import { runsQueryOptions } from "@/features/writing/lib/runs";
 import { getContent, isWritingEntry, type WritingEntry } from "@/lib/mdx";
+import { queryClient } from "@/lib/query-client";
 import { absoluteUrl, canonicalLink } from "@/lib/site";
 import { writingPostStructuredData } from "@/lib/structured-data";
 import { Await, createFileRoute, notFound } from "@tanstack/react-router";
@@ -75,6 +77,13 @@ const getNewestRunDate = createServerFn().handler(() => fetchNewestRunDate());
 export const Route = createFileRoute("/writing/$id")({
   loader: async ({ params }) => {
     const item = getWritingItem(params.id);
+    // The router preloads this route on link hover (defaultPreload: "intent"), so starting the
+    // feed's request here means the live post usually mounts with its runs already cached.
+    // Not awaited: navigation must never wait on it. Client only: the feed fetches a relative
+    // URL, which has no origin on the server, and its SSR output is the skeleton either way.
+    if (item.type === "live" && typeof window !== "undefined") {
+      void queryClient.prefetchQuery(runsQueryOptions);
+    }
     return {
       ...item,
       icon: await buildPostIcon(item.slug),

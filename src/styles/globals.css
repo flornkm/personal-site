@@ -84,6 +84,8 @@
   --animate-fade-in: fade-in 0.5s ease-out;
   --animate-work-reveal: work-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-mail-sweep: mail-sweep 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-skeleton-shimmer: skeleton-shimmer 1.6s ease-in-out infinite;
+  --animate-address-progress: address-progress 2.4s linear forwards;
 
   --shadow-xs: var(--smooth-shadow-xs);
   --shadow-sm: var(--smooth-shadow-sm);
@@ -125,6 +127,32 @@
     }
     to {
       clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* Highlight sweep for skeleton placeholders; the element it runs on is a full-size overlay. */
+  @keyframes skeleton-shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Safari's address-bar progress: a quick jump, a long creep, then the finish. */
+  @keyframes address-progress {
+    0% {
+      width: 0%;
+    }
+    12% {
+      width: 34%;
+    }
+    70% {
+      width: 72%;
+    }
+    100% {
+      width: 100%;
     }
   }
 }

@@ -4,7 +4,6 @@
 @import "gradient-border-plugin";
 @import "./colors.css";
 @import "./text.css";
-@import "./shadow-ring.css";
 
 @plugin "@tailwindcss/typography";
 @plugin 'tailwind-scrollbar';
@@ -85,6 +84,8 @@
   --animate-fade-in: fade-in 0.5s ease-out;
   --animate-work-reveal: work-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-mail-sweep: mail-sweep 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-skeleton-shimmer: skeleton-shimmer 1.6s ease-in-out infinite;
+  --animate-address-progress: address-progress 2.4s linear forwards;
 
   --shadow-xs: var(--smooth-shadow-xs);
   --shadow-sm: var(--smooth-shadow-sm);
@@ -128,6 +129,32 @@
       clip-path: inset(0 0 0 0);
     }
   }
+
+  /* Highlight sweep for skeleton placeholders; the element it runs on is a full-size overlay. */
+  @keyframes skeleton-shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Safari's address-bar progress: a quick jump, a long creep, then the finish. */
+  @keyframes address-progress {
+    0% {
+      width: 0%;
+    }
+    12% {
+      width: 34%;
+    }
+    70% {
+      width: 72%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
 }
 
 /* Skip the reveal for reduced motion, matching the useReducedMotion gate the
@@ -141,6 +168,11 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Declares the page's dark theme to the engine rather than only painting it. Load-bearing for
+     shadow-plugin's ring: its hairline flips to white through `light-dark()`, which reads this and
+     not `prefers-color-scheme` (that reports the visitor's OS, not whether the page is dark). Also
+     gets native form controls and scrollbars to render dark instead of light-on-dark. */
+  color-scheme: light dark;
 }
 
 /* Minimal scrollbars via the standard properties (Chrome, Firefox, Safari 18.2+).
@@ -244,6 +276,45 @@ body:has([data-block-scroll]) {
     calc(100% - var(--scroll-mask-size)) 100%;
 }
 
+/* scroll-mask-x: the horizontal twin, for an `overflow-x-auto` row. */
+@property --scroll-mask-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --scroll-mask-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@utility scroll-mask-x {
+  --scroll-mask-size: 3rem;
+  --scroll-mask-left: 0px;
+  --scroll-mask-right: 0px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-mask-left),
+    black calc(100% - var(--scroll-mask-right)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--scroll-mask-left),
+    black calc(100% - var(--scroll-mask-right)),
+    transparent 100%
+  );
+  animation:
+    scroll-mask-left linear both,
+    scroll-mask-right linear both;
+  animation-timeline: scroll(self x), scroll(self x);
+  animation-range:
+    0 var(--scroll-mask-size),
+    calc(100% - var(--scroll-mask-size)) 100%;
+}
+
 /* hit-area-<n>: invisibly extends a link's click/hover target by n px per
    side without affecting layout. When neighboring targets overlap (stacks
    with gaps under 2n px), the later sibling wins the shared zone. */
@@ -270,6 +341,23 @@ body:has([data-block-scroll]) {
   }
   to {
     --scroll-mask-bottom: 0px;
+  }
+}
+
+@keyframes scroll-mask-left {
+  from {
+    --scroll-mask-left: 0px;
+  }
+  to {
+    --scroll-mask-left: var(--scroll-mask-size);
+  }
+}
+@keyframes scroll-mask-right {
+  from {
+    --scroll-mask-right: var(--scroll-mask-size);
+  }
+  to {
+    --scroll-mask-right: 0px;
   }
 }
 

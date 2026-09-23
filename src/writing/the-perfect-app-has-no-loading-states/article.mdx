@@ -1,0 +1,122 @@
+---
+title: The perfect app has no loading states
+description: Every spinner is a small admission that the app didn't know what you wanted yet.
+date: 2026-09-23
+type: note
+---
+
+import { LoadingStrategies } from "./demos/loading-strategies";
+import { PrefetchOnHover } from "./demos/prefetch-on-hover";
+import { ShimmerSpeed } from "./demos/shimmer-speed";
+import { DataTree } from "./demos/data-tree";
+import { VideoLoading } from "./demos/video-loading";
+import { StaticShell } from "./demos/static-shell";
+
+# The perfect app has no loading states
+
+Pretty early on, when I was learning how to write code, I was faced with the question of how to show and implement loading states. Over the years, and especially since the shift to agentic coding, this has become a daily concern.
+
+Agents love them. A simple spinner - done.
+_Is it really that easy though?_
+
+There is this amazing article, ["The best loading states are no loading states"](https://jjenzz.com/best-loading-states-are-no-loading-states), which I took as inspiration to elaborate further. I'm convinced that more than one solution can be correct, but if done incorrectly, loading states will feel broken.
+
+<br />
+
+<LoadingStrategies />
+
+One thing becomes pretty clear: the first visit is the one loading state you can't get around. Dynamic content has to come from somewhere, either the server puts it into the first paint (which many do on public facing sites for SEO) or the client fetches it right after. Fine. The interesting part is everything after that - a perfect app makes the most of that first visit and then never makes you wait again.
+
+## Once a user is on the page, many sites still show spinners or skeletons. What to do then?
+
+### 1. Prefetch and cache content
+
+You can prefetch content not only in the moment a route switch happens, but already while the user is hovering or focusing a link.
+
+From the moment a cursor lands on an interactive element, there is a natural pause of around 0.3 to 0.5 seconds before the click.<FootnoteRefs sources="1" /> That's enough time to prefetch most data on an average wifi connection.
+
+The click afterwards will feel like the content was already there:
+
+<PrefetchOnHover />
+
+The other important part is caching content properly. Once a user has visited a page, its content should be kept around. Libraries like [TanStack Query](https://tanstack.com/query/latest) make this very easy. If you write your own fetching logic, this is something to keep in mind.
+
+### 2. Custom loading states should feel fast
+
+This one is very important. Loading states shouldn't feel smooth, slow or relaxing. They need to feel extremely fast. Users should get the impression that the app is working really hard to show content _ASAP_.
+
+<ShimmerSpeed />
+
+### 3. Communicate with your backend engineers (or agents)
+
+This is one of the cases where the backend directly shapes the frontend. How your queries are designed, how your infrastructure is set up, and how you store and serve content all matter a lot.
+
+<DataTree />
+
+### 4. Don't use spinners
+
+There is not a single use case where a loading spinner makes sense for fetching data. The only arguably valid one, and even then it needs a lot of care, is something like a spinner next to an agent's reasoning trace. But even there I'd argue there are better ways to show it. Using a spinner to conditionally render a dynamic component only screams that you were too lazy to care. Don't do that.
+
+One place where spinners are still used almost everywhere: video players. There are many reasons for this, but whenever I look into these cases myself, I find one or more of the following issues:
+
+- The video is only served in 4K
+- The whole video file is sent at once instead of being streamed
+- The player is embedded as a third-party iframe
+
+(the same applies to other media types as well)
+
+<VideoLoading />
+
+### 5. Show static navigation immediately
+
+One thing that keeps users from using the app right away is a root-level loading state (which in some cases is the better choice) that also blocks them from navigating. The navigation is static, so it can be there from the first frame.
+
+<StaticShell />
+
+<br />
+
+## Cheat sheet
+
+```md
+Please audit the loading states of our app and fix what you find:
+
+1. Prefetch and cache
+
+- Prefetch route data on link hover and focus, not only on click
+- Keep visited pages in a cache so navigating back never refetches
+- Check that the cache is used before any placeholder is shown
+
+2. Speed
+
+- Skeletons and shimmers should feel fast, not calm
+- Shorten placeholder animations to under one second per cycle
+- Resolve parts of the page as soon as their data arrives, don't wait for everything
+
+3. Data
+
+- List which components wait on which queries
+- Flag waterfalls where one request has to finish before the next one starts
+- Move slow queries out of the critical path or split them
+
+4. Spinners
+
+- Find every spinner. Replace each one with prefetched content, a skeleton, or nothing
+- Videos: serve smaller sizes, stream instead of sending the whole file, no third-party iframes
+
+5. Static shell
+
+- Navigation, header and layout should render on the first frame
+- A root-level loading state must never block navigation
+
+Report what you changed and what still needs a backend change.
+```
+
+<Footnotes
+  items={[
+    {
+      text: "Timing Guidelines for Exposing Hidden Content, Aurora Harley, Nielsen Norman Group:",
+      href: "https://www.nngroup.com/articles/timing-exposing-content/",
+      label: "nngroup.com",
+    },
+  ]}
+/>

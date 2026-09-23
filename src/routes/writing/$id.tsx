@@ -2,7 +2,9 @@ import { H1 } from "@/components/design-system/heading";
 import { useMdxContent } from "@/components/shared/mdx-content";
 import { Link } from "@/components/ui/link";
 import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
+import { runsQueryOptions } from "@/features/writing/lib/runs";
 import { getContent, isWritingEntry, type WritingEntry } from "@/lib/mdx";
+import { queryClient } from "@/lib/query-client";
 import { absoluteUrl, canonicalLink } from "@/lib/site";
 import { writingPostStructuredData } from "@/lib/structured-data";
 import { Await, createFileRoute, notFound } from "@tanstack/react-router";
@@ -75,6 +77,13 @@ const getNewestRunDate = createServerFn().handler(() => fetchNewestRunDate());
 export const Route = createFileRoute("/writing/$id")({
   loader: async ({ params }) => {
     const item = getWritingItem(params.id);
+    // The router preloads this route on link hover (defaultPreload: "intent"), so starting the
+    // feed's request here means the live post usually mounts with its runs already cached.
+    // Not awaited: navigation must never wait on it. Client only: the feed fetches a relative
+    // URL, which has no origin on the server, and its SSR output is the skeleton either way.
+    if (item.type === "live" && typeof window !== "undefined") {
+      void queryClient.prefetchQuery(runsQueryOptions);
+    }
     return {
       ...item,
       icon: await buildPostIcon(item.slug),
@@ -159,11 +168,12 @@ function WritingDetailPage() {
     "writing",
     item.slug,
     // Prose <h1> is hidden (the header above is the title). Media (div/figure) spans the full content
-    // width on every breakpoint; text is capped/centered via max-w from md up. On mobile everything
-    // is full-width so text aligns flush with the header (the root layout's px-6 is the only inset).
+    // width on every breakpoint; text is capped/centered via max-w from lg up, where the column is
+    // wide enough for figures to sit wider than the text. Below that everything is full-width so
+    // text aligns flush with the header, and figures overhang the column by their own padding.
     // <footer> (the footnotes) is excluded too: its rule spans the media width and it insets
     // its own notes to the text rail.
-    "w-full [&>h1]:hidden [&>h1+*]:mt-0 md:[&>*:not(h1)]:mx-auto md:[&>:not(div):not(figure):not(footer):not(h1)]:max-w-[460px]",
+    "w-full [&>h1]:hidden [&>h1+*]:mt-0 lg:[&>*:not(h1)]:mx-auto lg:[&>:not(div):not(figure):not(footer):not(h1)]:max-w-[460px]",
   );
 
   if (!content) {
@@ -184,7 +194,7 @@ function WritingDetailPage() {
               aria-label="Go back"
               className="inline-flex size-6.5 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover"
             >
-              <IconArrowUndoUp className="size-4" />
+              <IconArrowUndoUp mode="raw" className="size-4" />
             </Link>
           </div>
         </aside>
@@ -195,7 +205,7 @@ function WritingDetailPage() {
               aria-label="Go back"
               className="inline-flex size-7.5 shrink-0 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover"
             >
-              <IconArrowUndoUp className="size-4" />
+              <IconArrowUndoUp mode="raw" className="size-4" />
             </Link>
           </div>
           <header className="mb-8 md:-mt-7 md:mb-10">

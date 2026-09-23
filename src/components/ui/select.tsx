@@ -21,7 +21,7 @@ const Value = BaseSelect.Value;
 const TRIGGER = cn(
   "flex h-9 shrink-0 cursor-pointer items-center justify-between gap-2",
   "rounded-full bg-surface py-1 pl-4 pr-2.5 text-[13px] font-medium text-primary",
-  "shadow-ring-xs hairline-black/8 dark:hairline-white/10",
+  "smooth-shadow-ring-xs",
   "outline-none transition-colors hover:bg-surface-tertiary dark:hover:bg-surface-secondary",
   "focus-visible:ring-2 focus-visible:ring-default",
 );
@@ -33,10 +33,11 @@ const POPUP = cn(
   // trigger-sized wrapper sets --anchor-width to 100% and lands on the same rule.
   "w-[calc(var(--anchor-width)_+_2rem)] rounded-2xl bg-surface p-1.5",
   // A step brighter than the page it floats over in dark mode: on a near-black surface a shadow
-  // has nothing left to darken, so the surface carries the lift. The ring has to outrun that
-  // brighter fill: white/10 on the black page lands darker than surface-tertiary and reads as a
-  // dark seam, so it goes to /20.
-  "shadow-ring-lg hairline-black/8 dark:bg-surface-tertiary dark:hairline-white/20",
+  // has nothing left to darken, so the surface carries the lift. The ring is an *outer* layer, so
+  // it renders against the page behind the popup rather than against that brighter fill — and the
+  // plugin's 18% default lands at exactly surface-tertiary over a black page, i.e. no edge at all.
+  // /28 is the explicit override the plugin documents for surfaces this light.
+  "smooth-shadow-ring-lg smooth-ring-black/8 dark:bg-surface-tertiary dark:smooth-ring-white/28",
 );
 
 const ITEM = cn(

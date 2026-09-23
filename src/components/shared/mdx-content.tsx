@@ -4,11 +4,13 @@ import { MDXProvider } from "@mdx-js/react";
 import { ComponentProps, ComponentType, ReactNode, useMemo, useState } from "react";
 import { thumbhashToDataURL } from "@/lib/thumbhash";
 import { videoManifest } from "@/videoMap.gen";
+import { CodeBlock } from "@/components/shared/code-block";
 import { Link } from "@/components/ui/link";
 import { RunsFeed } from "@/features/writing/components/runs-feed";
 import { ModelViewer } from "../3d/model-viewer";
 import { Comparison } from "./comparison";
 import { FigureImage } from "./figure-image";
+import { FootnoteRefs } from "./footnote-ref";
 import { Image } from "./image";
 import { SmartVideo } from "./smart-video";
 
@@ -216,7 +218,7 @@ function Anchor({ href, ...props }: ComponentProps<"a">) {
 
 export function MobileImages({ images }: { images: { src: string; alt: string }[] }) {
   return (
-    <div className="not-prose my-8">
+    <div className="not-prose my-8 max-lg:-mx-4">
       <div className="flex gap-3 bg-secondary p-2 py-4 md:py-12 md:p-10">
         {images.map((img) => (
           <div key={img.src} className="flex-1 min-w-0 px-2 @container">
@@ -287,6 +289,7 @@ export const mdxComponents = {
   h6: H6,
   img: Img,
   a: Anchor,
+  pre: CodeBlock,
   Image,
   FigureImage,
   Video,
@@ -296,6 +299,7 @@ export const mdxComponents = {
   MobileImages,
   Comparison,
   Footnotes,
+  FootnoteRefs,
   Runs: RunsFeed,
 };
 

@@ -113,7 +113,7 @@ export function StackingOrder() {
     // its buttons and rules.
     // 520px against the article's 460px text column: wide enough to read as a figure rather than
     // an inline block, narrow enough that it still belongs to the column it interrupts.
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       {/* Outline only, no fill: the panels bring their own recessed tray, so a second grey box
           around it just stacks two nearly identical greys. The dark hairline is lighter than the
           one images carry — with no fill behind it there is nothing to hold it back, and at
@@ -150,7 +150,7 @@ export function StackingOrder() {
             <span
               aria-hidden
               style={{ transform: `translateX(${mode === "z" ? "0%" : "100%"})` }}
-              className="pointer-events-none absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/2)] rounded-full bg-surface shadow-ring-sm transition-transform duration-200 ease-out dark:bg-surface-tertiary"
+              className="pointer-events-none absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/2)] rounded-full bg-surface smooth-shadow-ring-sm transition-transform duration-200 ease-out dark:bg-surface-tertiary"
             />
             {MODES.map((option) => {
               const active = mode === option.value;
@@ -213,7 +213,7 @@ function Toolbar({
         height: TOOLBAR_HEIGHT,
         zIndex: mode === "z" ? 1 : undefined,
       }}
-      className="absolute inset-x-0 flex items-center justify-between rounded-[1.25rem] bg-surface pl-4 pr-2.5 shadow-ring-sm hairline-black/8 dark:hairline-white/10"
+      className="absolute inset-x-0 flex items-center justify-between rounded-[1.25rem] bg-surface pl-4 pr-2.5 smooth-shadow-ring-sm"
     >
       <span className="text-[15px] text-secondary">Sort by</span>
 
@@ -234,7 +234,7 @@ function Toolbar({
             // is a control inside a panel, where the other figure's trigger stands alone on a
             // stage. Only the menu below is shared.
             "flex cursor-pointer items-center gap-1.5 rounded-[0.625rem] bg-surface py-1.5 pl-3 pr-2",
-            "text-[14px] font-medium text-primary shadow-ring-xs hairline-black/8 dark:hairline-white/10",
+            "text-[14px] font-medium text-primary smooth-shadow-ring-xs",
             "outline-none transition-colors hover:bg-surface-secondary focus-visible:ring-2 focus-visible:ring-default",
             // Promoted up front so the scale spring never waits on a layer being created mid-press.
             // Note this makes the button its own stacking context — harmless here only because the
@@ -319,7 +319,7 @@ function Content({ mode }: { mode: Mode }) {
       // The z-index the menu can never beat — not because 2 > 9999, but because the comparison
       // happens up here, between two panels, and the menu is not in it.
       style={{ top: CONTENT_TOP, height: CONTENT_HEIGHT, zIndex: mode === "z" ? 2 : undefined }}
-      className="absolute inset-x-0 flex flex-col justify-center rounded-[1.25rem] bg-surface px-4 shadow-ring-sm hairline-black/8 dark:hairline-white/10"
+      className="absolute inset-x-0 flex flex-col justify-center rounded-[1.25rem] bg-surface px-4 smooth-shadow-ring-sm"
     >
       {ROWS.map((row, index) => (
         // The rule lives on the inner track, not the row, so it starts at the title's left edge

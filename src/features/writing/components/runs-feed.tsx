@@ -1,14 +1,15 @@
 import { Body2 } from "@/components/design-system/body";
 import Button, { buttonVariants } from "@/components/ui/button";
+import Skeleton from "@/components/ui/skeleton";
 import Tooltip from "@/components/ui/tooltip";
 import { ColorLegend, RouteCanvas } from "@/features/writing/components/route-canvas";
 import {
-  fetchRuns,
   formatDate,
   formatDuration,
   formatKm,
   type Metric,
   type Run,
+  runsQueryOptions,
 } from "@/features/writing/lib/runs";
 import { cn } from "@/lib/utils";
 import { IconArrowRotateClockwise } from "central-icons/IconArrowRotateClockwise";
@@ -88,7 +89,7 @@ function MetricSwitch({ metric, onChange }: { metric: Metric; onChange: (m: Metr
         data-focus-via={pointerFocused ? "pointer" : undefined}
         className={cn(
           buttonVariants({ variant: "tertiary", size: "sm" }),
-          "appearance-none bg-transparent pl-2 pr-7 shadow-ring-xs",
+          "appearance-none bg-transparent pl-2 pr-7 smooth-shadow-ring-xs",
         )}
       >
         <option value="temperature">°C</option>
@@ -100,7 +101,7 @@ function MetricSwitch({ metric, onChange }: { metric: Metric; onChange: (m: Metr
 }
 
 function StatSkeleton({ valueWidth }: { valueWidth: string }) {
-  return <div className={cn("h-7 animate-pulse rounded-sm bg-tertiary", valueWidth)} />;
+  return <Skeleton className={cn("h-7", valueWidth)} />;
 }
 
 // Mirrors the loaded layout exactly: same root <div> (so prose's max-w rule doesn't cap the
@@ -118,13 +119,13 @@ function RunsSkeleton() {
                 </span>
                 <StatSkeleton valueWidth="w-20" />
               </div>
-              <div className="h-3.5 w-24 animate-pulse rounded-sm bg-tertiary" />
+              <Skeleton className="h-3.5 w-24" />
             </div>
             <div className="mx-auto mt-3 w-full max-w-[460px] space-y-1.5">
-              <div className="h-3.5 w-full animate-pulse rounded-sm bg-tertiary" />
-              <div className="h-3.5 w-2/3 animate-pulse rounded-sm bg-tertiary" />
+              <Skeleton className="h-3.5 w-full" />
+              <Skeleton className="h-3.5 w-2/3" />
             </div>
-            <div className="mt-5 h-[26rem] w-full animate-pulse bg-tertiary md:h-[34rem]" />
+            <Skeleton className="mt-5 h-[26rem] w-full rounded-none md:h-[34rem]" />
           </li>
         ))}
       </ul>
@@ -181,7 +182,7 @@ function RunItem({ run }: { run: Run }) {
                 size="sm"
                 iconOnly
                 aria-label="Replay route animation"
-                className="shadow-ring-xs"
+                className="smooth-shadow-ring-xs"
                 onClick={() => setReplayToken((token) => token + 1)}
               >
                 {/* Each click adds a full turn, so rapid clicks keep spinning forward instead
@@ -206,7 +207,7 @@ function RunItem({ run }: { run: Run }) {
 }
 
 export function RunsFeed() {
-  const { data: runs, isPending, isError } = useQuery({ queryKey: ["runs"], queryFn: fetchRuns });
+  const { data: runs, isPending, isError } = useQuery(runsQueryOptions);
 
   if (isPending) return <RunsSkeleton />;
   if (isError) {

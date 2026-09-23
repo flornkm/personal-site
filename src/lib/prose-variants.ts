@@ -24,7 +24,7 @@ export const proseVariants = cva("text-tertiary", {
         "prose-td:text-primary prose-td:align-top prose-td:py-3",
         "[&_th]:border-b [&_th]:border-primary [&_td]:border-b [&_td]:border-primary",
         "[&_th]:pr-6 [&_td]:pr-6 [&_th:first-child]:pl-0 [&_td:first-child]:pl-0 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0",
-        "prose-pre:bg-surface-secondary prose-code:text-secondary prose-code:text-xs prose-code:font-mono",
+        "prose-pre:bg-tertiary prose-code:text-secondary prose-code:text-xs prose-code:font-mono",
         "prose-code:before:content-none prose-code:after:content-none",
         "[&_:not(pre)>code]:bg-surface-tertiary [&_:not(pre)>code]:rounded-[4px] [&_:not(pre)>code]:px-1 [&_:not(pre)>code]:py-0.5",
         "md:prose-img:max-w-xl",

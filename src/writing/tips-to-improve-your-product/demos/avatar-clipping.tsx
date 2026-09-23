@@ -97,7 +97,7 @@ export function AvatarClipping() {
   return (
     // Pretendard throughout, matching the other figure — the monogram inherits it like everything
     // else rather than carrying its own family.
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="flex justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
         {/* Concentric radii, so the corners stay parallel to whatever they wrap. Top: the card's
             20px plus the 4px tray padding = 24px. Bottom: the row's 12px plus its 6px inset =
@@ -111,7 +111,7 @@ export function AvatarClipping() {
               // With the backdrop on, the card is a saturated gradient edge to edge. An elevation
               // shadow under that reads as grime, so the edge moves inside as a hairline instead
               // (drawn as an overlay below, since an inset shadow would paint under the gradient).
-              !on.backdrop && "shadow-ring-sm hairline-black/8 dark:hairline-white/10",
+              !on.backdrop && "smooth-shadow-ring-sm",
             )}
           >
             <div className="relative flex h-[8.75rem] items-center justify-center overflow-hidden">
@@ -282,9 +282,9 @@ function CheckRow({
       <span
         className={cn(
           "grid size-[1.125rem] shrink-0 place-items-center rounded-[0.4rem] transition-colors",
-          // shadow-ring-xs already bakes its hairline into the shadow, so the unchecked box gets
+          // smooth-shadow-ring-xs already bakes its hairline into the shadow, so the unchecked box gets
           // no separate border on top of it.
-          checked ? "bg-accent-primary" : "bg-surface shadow-ring-xs",
+          checked ? "bg-accent-primary" : "bg-surface smooth-shadow-ring-xs",
         )}
       >
         {checked && <IconCheckmark1Small className="size-3.5 text-accent-foreground" />}

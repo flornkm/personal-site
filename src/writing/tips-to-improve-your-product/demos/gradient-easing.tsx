@@ -145,7 +145,7 @@ function RampStop({
       aria-hidden
       // Centred on its position with margins rather than a translate, so the only thing driving
       // this element is the one value it subscribes to.
-      className="absolute left-1/2 flex items-center justify-center rounded-full bg-white shadow-ring-sm hairline-black/20"
+      className="absolute left-1/2 flex items-center justify-center rounded-full bg-white smooth-shadow-ring-sm smooth-ring-black/20"
       style={{
         width: HANDLE_SIZE,
         height: HANDLE_SIZE,
@@ -188,7 +188,7 @@ export function GradientEasing() {
   };
 
   return (
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="flex justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
         {/* items-stretch rather than a matched height: the card's height comes from its aspect
             ratio, and the ramp takes whatever that turns out to be. */}

@@ -32,7 +32,7 @@ export function SwitchStretch() {
   const stretch = mode === "stretch";
 
   return (
-    <figure className="not-prose mx-auto my-8 max-w-[520px] font-pretendard">
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="flex justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
         {/* A floor on the stage rather than more padding: the switch is small enough that the
             frame would otherwise shrinkwrap to a strip, and the min-height keeps the figure the
@@ -67,7 +67,7 @@ export function SwitchStretch() {
               aria-hidden
               className={cn(
                 "pointer-events-none absolute inset-y-[3px] rounded-full bg-white",
-                "shadow-ring-xs hairline-black/12",
+                "smooth-shadow-ring-xs smooth-ring-black/12",
                 // Quick on the way out, unhurried on the way back, which is what makes the release
                 // read as elastic rather than as a second animation.
                 "transition-[left,right] duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
@@ -92,7 +92,7 @@ export function SwitchStretch() {
             <span
               aria-hidden
               style={{ transform: `translateX(${mode === "plain" ? "0%" : "100%"})` }}
-              className="pointer-events-none absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/2)] rounded-full bg-surface shadow-ring-sm transition-transform duration-200 ease-out dark:bg-surface-tertiary"
+              className="pointer-events-none absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/2)] rounded-full bg-surface smooth-shadow-ring-sm transition-transform duration-200 ease-out dark:bg-surface-tertiary"
             />
             {MODES.map((option) => {
               const active = mode === option.value;

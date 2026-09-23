@@ -25,9 +25,11 @@ function Content({ className, children, side, sideOffset = 8, align, ...props }:
             "min-w-[calc(var(--anchor-width)_+_2rem)] rounded-2xl bg-surface p-1.5",
             // A step brighter than the page it floats over in dark mode: on a near-black
             // surface a shadow has nothing left to darken, so the surface carries the lift.
-            // The ring has to outrun that brighter fill: white/10 on the black page lands
-            // darker than surface-tertiary and reads as a dark seam, so it goes to /20.
-            "shadow-ring-lg hairline-black/8 dark:bg-surface-tertiary dark:hairline-white/20",
+            // The ring is an *outer* layer, so it renders against the page behind the popup
+            // rather than against that brighter fill — and the plugin's 18% default lands at
+            // exactly surface-tertiary over a black page, i.e. no edge at all. /28 is the
+            // explicit override the plugin documents for surfaces this light.
+            "smooth-shadow-ring-lg smooth-ring-black/8 dark:bg-surface-tertiary dark:smooth-ring-white/28",
             "origin-[var(--transform-origin)] transition-all duration-150 ease-out",
             "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
             "data-[ending-style]:scale-95 data-[ending-style]:opacity-0",

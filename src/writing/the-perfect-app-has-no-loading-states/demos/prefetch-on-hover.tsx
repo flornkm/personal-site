@@ -1,0 +1,162 @@
+import { cn } from "@/lib/utils";
+import { IconChevronRight } from "central-icons/IconChevronRight";
+import { useRef, useState } from "react";
+import { IconChevronLeft } from "central-icons/IconChevronLeft";
+import Skeleton from "@/components/ui/skeleton";
+import { CALENDAR_DATE, CALENDAR_PARTS, CalendarPage } from "./calendar";
+
+/* Figure for "Prefetch and cache content".
+
+   Two panels, the same app, the same request. In the left one the day is fetched when the row
+   is clicked, so the click is followed by a skeleton for as long as the request takes. In the
+   right one the same request starts the moment the pointer arrives on the row. The hand
+   takes a few hundred milliseconds to get from arriving to pressing, and that is usually more
+   than the request needs, so the click lands on a page that is already there.
+
+   The prefetching browser is given most of the article's own claim: its request is short enough
+   that any unhurried hover covers it, while a click that beats it still shows the remainder as a
+   skeleton, so the mechanism stays visible. The other browser pays the full request after the
+   click. */
+
+// What the click-side browser waits for: roughly a list endpoint on decent wifi.
+const FETCH_MS = 450;
+// What the hover-side browser waits for, from the moment the pointer arrives.
+const PREFETCH_MS = 100;
+
+export function PrefetchOnHover() {
+  return (
+    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard lg:max-w-[560px]">
+      <div className="grid gap-4 @md:grid-cols-2">
+        <NavigatingPanel label="Fetch on click" prefetch={false} />
+        <NavigatingPanel label="Prefetch on hover" prefetch />
+      </div>
+    </figure>
+  );
+}
+
+type Page = "home" | "day";
+
+function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean }) {
+  const [page, setPage] = useState<Page>("home");
+  const [loaded, setLoaded] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  // Idempotent: hover, focus, touch and the click itself all funnel into one request, and only
+  // the first of them starts it. Whichever starts it sets how long it takes.
+  function fetchDay(ms: number) {
+    if (loaded || timer.current !== null) return;
+    timer.current = window.setTimeout(() => setLoaded(true), ms);
+  }
+
+  function open() {
+    fetchDay(FETCH_MS);
+    setPage("day");
+  }
+
+  // Going back also forgets the cache, so the figure can be tried again from a cold start. A
+  // real app would keep it, which is the point of the article, but a demo that only works once
+  // is no demo.
+  function back() {
+    if (timer.current !== null) window.clearTimeout(timer.current);
+    timer.current = null;
+    setLoaded(false);
+    setPage("home");
+  }
+
+  const onDay = page === "day";
+  const ready = Array.from({ length: CALENDAR_PARTS }, () => loaded);
+
+  return (
+    <div>
+      {/* No browser around this one. The panel's own title row carries the navigation: a back
+          button appears in it on the day view, and the row is the same height on both pages.
+          The whole page area is pinned to one height, so switching pages never moves anything. */}
+      <div className="rounded-[10px] bg-surface p-3.5 pt-2.5 smooth-shadow-ring-xs dark:smooth-ring-white/6">
+        <div className="h-[152px] space-y-3">
+          <div className="flex h-5 items-center gap-1 leading-none">
+            {onDay && (
+              <button
+                type="button"
+                aria-label="Back"
+                onClick={back}
+                className={cn(
+                  "-ml-1 flex size-5 cursor-pointer items-center justify-center rounded-md text-secondary",
+                  "transition-colors hover:bg-black/5 dark:hover:bg-white/5",
+                  "outline-none focus-visible:ring-2 focus-visible:ring-default",
+                )}
+              >
+                <IconChevronLeft size={12} mode="raw" />
+              </button>
+            )}
+            <span className="text-[13px] font-medium text-primary">
+              {onDay ? "Today" : "Calendar"}
+            </span>
+            {onDay && <DayDate ready={loaded} />}
+          </div>
+          {onDay ? (
+            <CalendarPage ready={ready} header={false} />
+          ) : (
+            <Home onOpen={open} onIntent={prefetch ? () => fetchDay(PREFETCH_MS) : undefined} />
+          )}
+        </div>
+      </div>
+      <p className="mt-3 text-center text-[13px] text-tertiary">{label}</p>
+    </div>
+  );
+}
+
+function DayDate({ ready }: { ready: boolean }) {
+  if (!ready) return <Skeleton className="rounded-full ml-auto h-2 w-14" />;
+  return <span className="ml-auto text-[11px] text-tertiary">{CALENDAR_DATE}</span>;
+}
+
+const DAYS = [
+  { label: "Today", meta: "3 events" },
+  { label: "Tomorrow", meta: "1 event" },
+  { label: "Thursday", meta: "2 events" },
+];
+
+const DAY_ROW =
+  "-mx-2 flex h-8 w-[calc(100%+1rem)] items-center rounded-lg bg-surface-tertiary px-2 text-[12px] leading-none";
+
+function Home({ onOpen, onIntent }: { onOpen: () => void; onIntent?: () => void }) {
+  const [today, ...rest] = DAYS;
+  return (
+    <div className="space-y-1">
+      {/* Intent is the pointer arriving, keyboard focus landing, or a finger touching down:
+          each is the earliest moment this row is likely to be opened. Only today opens; the
+          other days are there so the list reads as a list. */}
+      <button
+        type="button"
+        onClick={onOpen}
+        onPointerEnter={onIntent}
+        onFocus={onIntent}
+        onTouchStart={onIntent}
+        className={cn(
+          DAY_ROW,
+          "cursor-pointer transition-colors duration-150 hover:bg-quaternary dark:hover:bg-interactive-active",
+          "outline-none focus-visible:ring-2 focus-visible:ring-default",
+        )}
+      >
+        <DayRow day={today} />
+      </button>
+      {rest.map((day) => (
+        <div key={day.label} className={DAY_ROW}>
+          <DayRow day={day} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DayRow({ day }: { day: (typeof DAYS)[number] }) {
+  return (
+    <>
+      <span className="text-primary">{day.label}</span>
+      <span className="ml-auto flex items-center gap-1 text-tertiary">
+        {day.meta}
+        <IconChevronRight size={10} mode="raw" className="text-quaternary" />
+      </span>
+    </>
+  );
+}

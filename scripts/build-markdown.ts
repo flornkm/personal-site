@@ -201,6 +201,33 @@ const LAYOUT_SPAN_PATTERN = /<\/?span\b[^>]*>/g;
 
 const INTERACTIVE_NOTE = "*(Interactive content on the web page.)*";
 
+// Footnotes are the one component whose content is plain data, so the twin gets real markdown
+// footnotes instead of the note: the reference stays in its sentence, the list becomes the
+// definitions. Numbering follows the items' order, which is what <Footnotes> renders too.
+const FOOTNOTE_REF_PATTERN = /\s*<FootnoteRefs\b[^>]*\bsources="([^"]*)"[^>]*\/>/g;
+const FOOTNOTE_ITEM_PATTERN =
+  /\{\s*text:\s*"([^"]*)"\s*(?:,\s*href:\s*"([^"]*)"\s*)?(?:,\s*label:\s*"([^"]*)"\s*)?,?\s*\}/g;
+
+function footnoteRefs(line: string): string {
+  return line.replace(FOOTNOTE_REF_PATTERN, (_, sources: string) =>
+    sources
+      .split(",")
+      .map((number) => number.trim())
+      .filter(Boolean)
+      .map((number) => `[^${number}]`)
+      .join(""),
+  );
+}
+
+function footnoteDefinitions(block: string): string {
+  const lines: string[] = [];
+  for (const [, text, href, label] of block.matchAll(FOOTNOTE_ITEM_PATTERN)) {
+    const source = href ? ` ${label ? `[${label}](${href})` : href}` : "";
+    lines.push(`[^${lines.length + 1}]: ${text}${source}`);
+  }
+  return lines.join("\n");
+}
+
 /**
  * Component name -> the module the article imports it from, so a demo can be traced back to
  * its own source directory without a naming convention to keep in sync.
@@ -279,7 +306,7 @@ function cleanMdxBody(body: string, postDir: string): string {
     // Spacing between sections on the page; in markdown the blank lines already say it.
     if (/^\s*<br\s*\/?>\s*$/.test(line)) continue;
 
-    let stripped = line.replace(CHROME_PATTERN, "");
+    let stripped = footnoteRefs(line.replace(CHROME_PATTERN, ""));
     if (stripped.includes("<span")) {
       // Unwrapping the span leaves the emphasis it splits showing as two runs (`_a_ _b_`).
       // Rejoining them keeps the sentence one italic phrase, the way the page renders it.
@@ -300,6 +327,10 @@ function cleanMdxBody(body: string, postDir: string): string {
     const demo = demoMarkdown(component, sources, postDir);
     if (demo) {
       out.push(demo);
+      continue;
+    }
+    if (component === "Footnotes") {
+      out.push(footnoteDefinitions(block));
       continue;
     }
 

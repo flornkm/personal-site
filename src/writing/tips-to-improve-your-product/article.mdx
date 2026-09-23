@@ -5,7 +5,6 @@ date: 2026-08-30
 type: note
 ---
 
-import { CopyAsMarkdown } from "@/features/writing/components/copy-as-markdown";
 import { ActiveState } from "./demos/active-state";
 import { AvatarClipping } from "./demos/avatar-clipping";
 import { StackingOrder } from "./demos/stacking-order";
@@ -15,8 +14,6 @@ import { SwitchStretch } from "./demos/switch-stretch";
 # Helpful tips for webdesign
 
 This article bullet-point-lists a bunch of tips I personally found helpful when I learned them. Most of these come from practical work, where we encountered edge cases. I believe continuous refactoring of the elements used in your app, even when you use an existing design system, leads to a better user experience in the long run.
-
-_Obviously, feel free to copy this article and give it your_ <span className="whitespace-nowrap">_agent._ <CopyAsMarkdown /></span>
 
 ## Avatar Groups, done right
 
@@ -68,3 +65,42 @@ Try to avoid using `borders` or `outlines`, they need to have the exact color of
 - Helps to create better readability while taking up less space
 - Generally leads to a more polished look and feel, i.e. when used in cards
 - Mostly to be used with background imagery, leading to more of the natural light of the image being visible
+
+<br />
+
+## Cheat sheet
+
+```md
+Please check the UI details of our app:
+
+Avatar groups
+
+- Overlapping avatars are separated by clipping each one against its neighbour, not by a border
+- Borders and outlines need the exact background colour, which breaks on gradients and images
+- Keep initials readable inside the visible part of each avatar
+
+Stacking
+
+- Order elements in the DOM so that z-index is rarely needed
+- Where z-index is unavoidable, leave a comment saying why
+- Don't nest absolute positioning without a reason
+
+Active states
+
+- Every pressable element has a visible pressed state, not just hover
+- Hover and press are ranked: the press is stronger than the hover
+- Playful brands can move (scale down slightly), professional ones shift tone instead
+- Users press these buttons hundreds of times a day, so keep it subtle and fast
+
+Switches
+
+- While held, stretch the thumb toward the side it will travel to
+- Snap back quickly on release
+- Match the weight of the motion to the brand
+
+Gradients
+
+- Ease gradients instead of using linear stops
+- Use them over imagery so more of the image stays visible
+- Eased gradients need less space to keep text readable
+```

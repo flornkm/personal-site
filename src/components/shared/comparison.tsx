@@ -160,16 +160,16 @@ export function Comparison({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {/* Cap the panel to the same "proud" width the wider FigureImages use (720px), so on
           large screens the comparison sits a bit wider than the text column without ballooning
-          to the full article width. It's centred by the article's md:mx-auto on figures. */}
-      <figure className="not-prose my-8 first:mt-0 last:mb-0 md:max-w-[720px]">
-        {/* On mobile the panel breaks out of ancestor padding to line up with the body
-            text's 24px side padding (the root layout's px-6); from md up it's a normal block. */}
+          to the full article width. It's centred by the article's lg:mx-auto on figures. */}
+      <figure className="not-prose my-8 first:mt-0 last:mb-0 lg:max-w-[720px]">
+        {/* Same overhang as FigureImage: 16px proud of the text below lg, a normal block above. */}
         <Dialog.Trigger
           aria-label={alt ? `Compare: ${alt}` : "Compare images"}
           className={cn(
             "block w-full cursor-zoom-in appearance-none text-left outline-none",
             "focus-visible:ring-2 focus-visible:ring-default",
-            "max-md:ml-[50%] max-md:w-[calc(100vw-48px)] max-md:-translate-x-1/2",
+            "max-md:ml-[50%] max-md:w-[calc(100vw-16px)] max-md:-translate-x-1/2",
+            "md:max-lg:-mx-4 md:max-lg:w-[calc(100%+2rem)]",
           )}
         >
           <div className="bg-tertiary p-4 transition-opacity duration-200 hover:opacity-90 md:p-12">
@@ -196,7 +196,7 @@ export function Comparison({
         {/* Mirrors the body text column: inset via the same margins on mobile (see the prose
             rules in routes/writing/$id.tsx), centred 460px from md up. */}
         {alt && (
-          <figcaption className="mt-4 font-serif text-[11px] font-normal italic text-primary md:mx-auto md:max-w-[460px]">
+          <figcaption className="mt-4 font-serif text-[11px] font-normal italic text-primary lg:mx-auto lg:max-w-[460px]">
             {alt}
             {sources && <FootnoteRefs sources={sources} />}
           </figcaption>
@@ -208,7 +208,7 @@ export function Comparison({
         <Dialog.Popup variant="headless">
           <Dialog.Title className="sr-only">{alt || "Image comparison"}</Dialog.Title>
           <div
-            className="w-full rounded-lg bg-surface p-6 shadow-ring-lg md:p-10 dark:bg-neutral-950"
+            className="w-full rounded-lg bg-surface p-6 smooth-shadow-ring-lg md:p-10 dark:bg-neutral-950"
             style={{ width: zoomWidth }}
           >
             <DiffSurface

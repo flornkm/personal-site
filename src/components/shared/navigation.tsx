@@ -109,7 +109,7 @@ export default function Navigation() {
 
       {/* Mobile-only floating bar; on desktop the tabs and Contact live in the top nav above. */}
       <div className="fixed inset-x-0 bottom-4 z-50 flex justify-center md:hidden">
-        <div className="flex items-center gap-1 rounded-full bg-primary p-1.5 shadow-ring-lg hairline-black/8 dark:hairline-white/10">
+        <div className="flex items-center gap-1 rounded-full bg-primary p-1.5 smooth-shadow-ring-lg">
           {TABS.map((tab) => {
             const active = isActive(tab.href);
             return (

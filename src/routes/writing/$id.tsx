@@ -5,7 +5,7 @@ import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
 import { runsQueryOptions } from "@/features/writing/lib/runs";
 import { getContent, isWritingEntry, type WritingEntry } from "@/lib/mdx";
 import { queryClient } from "@/lib/query-client";
-import { absoluteUrl, canonicalLink } from "@/lib/site";
+import { absoluteUrl, canonicalLink, canonicalUrl } from "@/lib/site";
 import { writingPostStructuredData } from "@/lib/structured-data";
 import { Await, createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -102,7 +102,14 @@ export const Route = createFileRoute("/writing/$id")({
         { name: "description", content: loaderData.description },
         { property: "og:title", content: loaderData.title },
         { property: "og:description", content: loaderData.description },
+        { property: "og:url", content: canonicalUrl(`/writing/${loaderData.slug}`) },
         { property: "og:image", content: ogImage },
+        // X's card crawler has been seen fetching a valid 1200x630 PNG and still dropping
+        // it from the card; declaring the image's shape up front removes any guessing on its side.
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:image:type", content: "image/png" },
+        { property: "og:image:alt", content: loaderData.title },
         // Overrides the root's og:type=website (deepest match wins). Only dated posts
         // claim to be articles; the live post has no publish time to declare.
         ...(loaderData.date
@@ -115,6 +122,7 @@ export const Route = createFileRoute("/writing/$id")({
         { name: "twitter:title", content: loaderData.title },
         { name: "twitter:description", content: loaderData.description },
         { name: "twitter:image", content: ogImage },
+        { name: "twitter:image:alt", content: loaderData.title },
       ],
       links: [canonicalLink(`/writing/${loaderData.slug}`)],
       scripts: [

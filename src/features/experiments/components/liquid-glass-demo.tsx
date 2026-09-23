@@ -717,7 +717,7 @@ export const LiquidGlass = () => {
         {!live && (
           <div
             aria-hidden
-            className="absolute left-1/2 -translate-x-1/2 rounded-full bg-white/12 shadow-ring-sm"
+            className="absolute left-1/2 -translate-x-1/2 rounded-full bg-white/12 smooth-shadow-ring-sm"
             style={{
               top: `${((REST.y - BUTTON_H / 2) / STAGE_H) * 100}%`,
               width: `${(BUTTON_W / STAGE_W) * 100}%`,

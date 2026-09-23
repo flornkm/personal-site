@@ -119,7 +119,7 @@ export function FigureImage({
               image and never upscales a bitmap past its resolution. */}
           <div
             className={cn(
-              "rounded-lg bg-surface p-6 shadow-ring-lg md:p-10 dark:bg-neutral-950",
+              "rounded-lg bg-surface p-6 smooth-shadow-ring-lg md:p-10 dark:bg-neutral-950",
               isDiagram ? "w-[min(92vw,60rem)]" : "w-fit max-w-[min(92vw,76rem)]",
             )}
           >

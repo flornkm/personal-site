@@ -4,7 +4,6 @@
 @import "gradient-border-plugin";
 @import "./colors.css";
 @import "./text.css";
-@import "./shadow-ring.css";
 
 @plugin "@tailwindcss/typography";
 @plugin 'tailwind-scrollbar';
@@ -141,6 +140,11 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Declares the page's dark theme to the engine rather than only painting it. Load-bearing for
+     shadow-plugin's ring: its hairline flips to white through `light-dark()`, which reads this and
+     not `prefers-color-scheme` (that reports the visitor's OS, not whether the page is dark). Also
+     gets native form controls and scrollbars to render dark instead of light-on-dark. */
+  color-scheme: light dark;
 }
 
 /* Minimal scrollbars via the standard properties (Chrome, Firefox, Safari 18.2+).

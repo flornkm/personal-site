@@ -276,7 +276,7 @@ export function CRTDisplay({
             // it. Sized against the parent query container so the 4:3 box stays fully
             // contained whether the dialog is landscape (height-limited) or portrait
             // (width-limited).
-            "relative aspect-[4/3] h-[min(74cqh,58cqw)] rounded-[1.5rem] bg-neutral-900 px-4 pt-4 pb-6 sm:px-5 sm:pt-5 sm:pb-7 shadow-ring-xl dark:hairline-white/10 overflow-hidden select-none"
+            "relative aspect-[4/3] h-[min(74cqh,58cqw)] rounded-[1.5rem] bg-neutral-900 px-4 pt-4 pb-6 sm:px-5 sm:pt-5 sm:pb-7 smooth-shadow-ring-xl overflow-hidden select-none"
       }
       onClick={handleClick}
       onMouseMove={handleMouseMove}

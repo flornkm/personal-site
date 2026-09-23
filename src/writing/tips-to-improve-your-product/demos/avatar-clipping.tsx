@@ -111,7 +111,7 @@ export function AvatarClipping() {
               // With the backdrop on, the card is a saturated gradient edge to edge. An elevation
               // shadow under that reads as grime, so the edge moves inside as a hairline instead
               // (drawn as an overlay below, since an inset shadow would paint under the gradient).
-              !on.backdrop && "shadow-ring-sm hairline-black/8 dark:hairline-white/10",
+              !on.backdrop && "smooth-shadow-ring-sm",
             )}
           >
             <div className="relative flex h-[8.75rem] items-center justify-center overflow-hidden">
@@ -282,9 +282,9 @@ function CheckRow({
       <span
         className={cn(
           "grid size-[1.125rem] shrink-0 place-items-center rounded-[0.4rem] transition-colors",
-          // shadow-ring-xs already bakes its hairline into the shadow, so the unchecked box gets
+          // smooth-shadow-ring-xs already bakes its hairline into the shadow, so the unchecked box gets
           // no separate border on top of it.
-          checked ? "bg-accent-primary" : "bg-surface shadow-ring-xs",
+          checked ? "bg-accent-primary" : "bg-surface smooth-shadow-ring-xs",
         )}
       >
         {checked && <IconCheckmark1Small className="size-3.5 text-accent-foreground" />}

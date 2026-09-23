@@ -88,7 +88,7 @@ function MetricSwitch({ metric, onChange }: { metric: Metric; onChange: (m: Metr
         data-focus-via={pointerFocused ? "pointer" : undefined}
         className={cn(
           buttonVariants({ variant: "tertiary", size: "sm" }),
-          "appearance-none bg-transparent pl-2 pr-7 shadow-ring-xs",
+          "appearance-none bg-transparent pl-2 pr-7 smooth-shadow-ring-xs",
         )}
       >
         <option value="temperature">°C</option>
@@ -181,7 +181,7 @@ function RunItem({ run }: { run: Run }) {
                 size="sm"
                 iconOnly
                 aria-label="Replay route animation"
-                className="shadow-ring-xs"
+                className="smooth-shadow-ring-xs"
                 onClick={() => setReplayToken((token) => token + 1)}
               >
                 {/* Each click adds a full turn, so rapid clicks keep spinning forward instead

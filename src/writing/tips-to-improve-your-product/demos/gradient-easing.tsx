@@ -145,7 +145,7 @@ function RampStop({
       aria-hidden
       // Centred on its position with margins rather than a translate, so the only thing driving
       // this element is the one value it subscribes to.
-      className="absolute left-1/2 flex items-center justify-center rounded-full bg-white shadow-ring-sm hairline-black/20"
+      className="absolute left-1/2 flex items-center justify-center rounded-full bg-white smooth-shadow-ring-sm smooth-ring-black/20"
       style={{
         width: HANDLE_SIZE,
         height: HANDLE_SIZE,

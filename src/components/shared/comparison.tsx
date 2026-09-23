@@ -208,7 +208,7 @@ export function Comparison({
         <Dialog.Popup variant="headless">
           <Dialog.Title className="sr-only">{alt || "Image comparison"}</Dialog.Title>
           <div
-            className="w-full rounded-lg bg-surface p-6 shadow-ring-lg md:p-10 dark:bg-neutral-950"
+            className="w-full rounded-lg bg-surface p-6 smooth-shadow-ring-lg md:p-10 dark:bg-neutral-950"
             style={{ width: zoomWidth }}
           >
             <DiffSurface

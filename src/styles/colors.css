@@ -55,33 +55,42 @@
   --shadow-lg: rgba(0, 0, 0, 0.1);
 }
 
+/*
+ * Dark mode. The page stays pure black, so every step above it has to be earned by the surface
+ * itself: a shadow has nothing left to darken down there, which makes the fill and the hairline
+ * the only two things carrying elevation. The ramp below is therefore pitched brighter than a
+ * naive inversion of the light scale — a raised control at #171717 is 23/255 off a black page,
+ * which reads as flat no matter how large the shadow under it is.
+ */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-primary: #000000;
-    --bg-secondary: #0a0a0a;
-    --bg-image-card: #0f0f0f;
-    --bg-tertiary: #171717;
-    --bg-quaternary: #262626;
+    --bg-secondary: #0d0d0d;
+    --bg-image-card: #141414;
+    --bg-tertiary: #1c1c1c;
+    --bg-quaternary: #2e2e2e;
     --bg-inverted: #ffffff;
 
-    --surface: #171717;
-    --surface-secondary: #0a0a0a;
-    --surface-tertiary: #262626;
+    /* surface-secondary is the *recessed* one here (trays, wells) — it has to stay readable as a
+       step down from a black page, which #0a0a0a never was. */
+    --surface: #1c1c1c;
+    --surface-secondary: #111111;
+    --surface-tertiary: #2e2e2e;
     --surface-inverted: #ffffff;
 
     --text-primary: #ffffff;
     --text-secondary: #bdbdbd;
     --text-tertiary: #969696;
-    --text-quaternary: #6b6b6b;
+    --text-quaternary: #7a7a7a;
     --text-inverted: #000000;
     --text-inverted-secondary: #525252;
 
-    --border-primary: #262626;
-    --border-secondary: #404040;
-    --border-tertiary: #171717;
+    --border-primary: #2e2e2e;
+    --border-secondary: #474747;
+    --border-tertiary: #1c1c1c;
 
-    --interactive-hover: #262626;
-    --interactive-active: #404040;
+    --interactive-hover: #2e2e2e;
+    --interactive-active: #3d3d3d;
 
     --interactive-secondary: #404040;
     --interactive-secondary-hover: #4a4a4a;

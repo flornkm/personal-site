@@ -51,7 +51,7 @@ const popupVariants = cva(
       variant: {
         // Matches the expanded experiments tile: a centred surface panel.
         default: cn(
-          "h-[min(88vh,33rem)] w-[min(92vw,44rem)] overflow-hidden rounded-lg shadow-ring-lg",
+          "h-[min(88vh,33rem)] w-[min(92vw,44rem)] overflow-hidden rounded-lg smooth-shadow-ring-lg",
           "bg-surface dark:bg-neutral-950",
         ),
         // No chrome — lays out whatever it's given (e.g. an image + caption).

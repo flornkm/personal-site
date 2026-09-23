@@ -67,7 +67,9 @@ function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean
   const ready = Array.from({ length: CALENDAR_PARTS }, () => loaded);
 
   return (
-    <div>
+    // Stacked on narrow screens the panel would span the full column, which is wide for a
+    // phone-sized app; capped and centred there, full column width once the two sit side by side.
+    <div className="mx-auto w-full max-w-[300px] @md:max-w-none">
       {/* No browser around this one. The panel's own title row carries the navigation: a back
           button appears in it on the day view, and the row is the same height on both pages.
           The whole page area is pinned to one height, so switching pages never moves anything. */}

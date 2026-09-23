@@ -158,13 +158,31 @@ describe("MDX to markdown", () => {
   it.each(posts)("leaves no JSX in the twin of %s", (slug: string) => {
     const twin = markdownPages[`/writing/${slug}`]!.markdown;
     const outsideFences = twin.replace(/^```[\s\S]*?^```/gm, "");
+    // Footnotes turn into markdown footnotes and the copy button into nothing; neither is a
+    // demo standing in for a note.
     const uncovered = componentsIn(slug).filter(
-      ({ name, sidecar }) => !sidecar && name !== "CopyAsMarkdown",
+      ({ name, sidecar }) =>
+        !sidecar && !["CopyAsMarkdown", "FootnoteRefs", "Footnotes"].includes(name),
     );
 
     expect((twin.match(/\*\(Interactive content on the web page\.\)\*/g) ?? []).length).toBe(
       uncovered.length,
     );
     expect(outsideFences).not.toMatch(/<[A-Za-z]\w*/);
+  });
+
+  // A reference in a sentence has to land on a definition at the end, or the number points
+  // at nothing.
+  it.each(posts)("resolves every footnote reference in the twin of %s", (slug: string) => {
+    const twin = markdownPages[`/writing/${slug}`]!.markdown;
+    const source = fs.readFileSync(path.join(writingDir, slug, "article.mdx"), "utf8");
+    const references = [...source.matchAll(/<FootnoteRefs\b[^>]*sources="([^"]*)"/g)].flatMap(
+      ([, sources]) => sources!.split(",").map((n) => n.trim()),
+    );
+    for (const number of references) {
+      expect(twin).toContain(`[^${number}]`);
+      expect(twin).toMatch(new RegExp(`^\\[\\^${number}\\]: .+`, "m"));
+    }
+    expect(twin).not.toContain("<Footnote");
   });
 });

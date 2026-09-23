@@ -97,7 +97,7 @@ export function ShimmerSpeed() {
         {/* Centred in the space above the slider rather than on the whole stage: the bottom
             margin is the slider row's height, so the card's centre lands halfway up what is left. */}
         <div className="mb-8">
-          <div ref={cardRef} className="w-56 space-y-3">
+          <div ref={cardRef} className="w-72 space-y-3">
             <div className="flex items-center gap-3">
               <Bone className="size-9 rounded-full" />
               <div className="flex-1 space-y-2">
@@ -109,7 +109,7 @@ export function ShimmerSpeed() {
           </div>
 
           <div
-            className="absolute bottom-4 left-1/2 flex w-48 -translate-x-1/2 items-center gap-3"
+            className="absolute bottom-4 left-1/2 flex w-56 -translate-x-1/2 items-center gap-3"
             onPointerEnter={() => {
               hovering.current = true;
             }}
@@ -118,7 +118,7 @@ export function ShimmerSpeed() {
               if (!grabbing.current) resumeFromSpeed();
             }}
           >
-            <span className="text-[11px] leading-none text-quaternary">Slow</span>
+            <span className="text-[12px] leading-none text-quaternary">Slow</span>
             <RangeSlider
               ref={sliderRef}
               aria-label="Shimmer speed"
@@ -134,7 +134,7 @@ export function ShimmerSpeed() {
                 if (!isGrabbing && !hovering.current) resumeFromSpeed();
               }}
             />
-            <span className="text-[11px] leading-none text-quaternary">Fast</span>
+            <span className="text-[12px] leading-none text-quaternary">Fast</span>
           </div>
         </div>
       </div>

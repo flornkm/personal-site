@@ -50,61 +50,65 @@ export function LoadingStrategies() {
   const allReady = PART_MS.map(() => true);
 
   return (
-    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard lg:max-w-[760px]">
-      {/* Below @lg the three windows don't fit side by side, so they become a snap row that
+    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard">
+      {/* Wider than the article column from lg: half the column in, half its own width back,
+          so it stays centred on the text while each browser gets room to read. */}
+      <div className="lg:ml-[50%] lg:w-[840px] lg:-translate-x-1/2">
+        {/* Below @lg the three windows don't fit side by side, so they become a snap row that
           scrolls sideways, each edge fading only while a window is hidden past it. The vertical
           padding is cancelled by the negative margin: it exists so the row's overflow clipping
           leaves room for the windows' shadows. */}
-      <div
-        className={cn(
-          "grid gap-4 @lg:grid-cols-3",
-          "@max-lg:-my-2 @max-lg:flex @max-lg:snap-x @max-lg:snap-mandatory @max-lg:scroll-px-4 @max-lg:overflow-x-auto @max-lg:px-4 @max-lg:py-2 @max-lg:scroll-mask-x",
-        )}
-      >
-        <div className={SLIDE}>
-          <Browser
-            label="Server rendered"
-            run={run}
-            progress={loading}
-            progressMs={LOAD_MS}
-            hidden={loading}
-          >
-            <GroceriesPage ready={allReady} />
-          </Browser>
-        </div>
-        <div className={SLIDE}>
-          <Browser label="Root spinner" hidden={loading} overlay={loading && <Spinner />}>
-            <GroceriesPage ready={allReady} />
-          </Browser>
-        </div>
-        <div className={SLIDE}>
-          <Browser label="Skeletons">
-            <GroceriesPage ready={skeletonReady} shell={shellReady} />
-          </Browser>
-        </div>
-      </div>
-
-      <div className="mt-8 flex justify-center">
-        {/* Same button as the replay control on the runs feed, with its label kept. */}
-        <Button
-          variant="tertiary"
-          size="sm"
-          className="smooth-shadow-ring-xs"
-          onClick={reload}
-          prefix={
-            // Each click adds a full turn, so rapid clicks keep spinning forward instead of
-            // snapping back.
-            <motion.span
-              className="inline-flex"
-              animate={{ rotate: reduceMotion ? 0 : run * 360 }}
-              transition={{ duration: 0.55, ease: [0.3, 0, 0.2, 1] }}
-            >
-              <IconArrowRotateClockwise />
-            </motion.span>
-          }
+        <div
+          className={cn(
+            "grid gap-4 @lg:grid-cols-3",
+            "@max-lg:-my-2 @max-lg:flex @max-lg:snap-x @max-lg:snap-mandatory @max-lg:scroll-px-4 @max-lg:overflow-x-auto @max-lg:px-4 @max-lg:py-2 @max-lg:scroll-mask-x",
+          )}
         >
-          Reload
-        </Button>
+          <div className={SLIDE}>
+            <Browser
+              label="Server rendered"
+              run={run}
+              progress={loading}
+              progressMs={LOAD_MS}
+              hidden={loading}
+            >
+              <GroceriesPage ready={allReady} />
+            </Browser>
+          </div>
+          <div className={SLIDE}>
+            <Browser label="Root spinner" hidden={loading} overlay={loading && <Spinner />}>
+              <GroceriesPage ready={allReady} />
+            </Browser>
+          </div>
+          <div className={SLIDE}>
+            <Browser label="Skeletons">
+              <GroceriesPage ready={skeletonReady} shell={shellReady} />
+            </Browser>
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          {/* Same button as the replay control on the runs feed, with its label kept. */}
+          <Button
+            variant="tertiary"
+            size="sm"
+            className="smooth-shadow-ring-xs"
+            onClick={reload}
+            prefix={
+              // Each click adds a full turn, so rapid clicks keep spinning forward instead of
+              // snapping back.
+              <motion.span
+                className="inline-flex"
+                animate={{ rotate: reduceMotion ? 0 : run * 360 }}
+                transition={{ duration: 0.55, ease: [0.3, 0, 0.2, 1] }}
+              >
+                <IconArrowRotateClockwise />
+              </motion.span>
+            }
+          >
+            Reload
+          </Button>
+        </div>
       </div>
     </figure>
   );

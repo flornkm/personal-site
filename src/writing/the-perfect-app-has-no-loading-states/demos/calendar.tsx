@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const FIRST_HOUR = 9;
 const HOURS = 5;
-const HOUR_PX = 24;
+const HOUR_PX = 26;
 
 // Content artwork: one hue per event, tinted for the block and darkened for its text, with a
 // dark-mode pair through light-dark() since the site's theme is a colour-scheme preference.
@@ -46,7 +46,7 @@ export function CalendarPage({
             style={{ top: index * HOUR_PX }}
             className="absolute inset-x-0 flex items-start border-t border-primary"
           >
-            <span className="-mt-[5px] w-6 bg-surface pr-1 text-[9px] leading-none text-tertiary tabular-nums">
+            <span className="-mt-[5px] w-6 bg-surface pr-1 text-[10px] leading-none text-tertiary tabular-nums">
               {FIRST_HOUR + index}
             </span>
           </div>
@@ -62,16 +62,16 @@ export function CalendarPage({
 function Header({ ready }: { ready: boolean }) {
   if (!ready) {
     return (
-      <div className="flex h-5 items-center">
+      <div className="flex h-6 items-center">
         <Skeleton className="rounded-full h-2.5 w-12" />
         <Skeleton className="rounded-full ml-auto h-2 w-14" />
       </div>
     );
   }
   return (
-    <div className="flex h-5 items-center leading-none">
-      <span className="text-[13px] font-medium text-primary">Today</span>
-      <span className="ml-auto text-[11px] text-tertiary">{CALENDAR_DATE}</span>
+    <div className="flex h-6 items-center leading-none">
+      <span className="text-[14px] font-medium text-primary">Today</span>
+      <span className="ml-auto text-[12px] text-tertiary">{CALENDAR_DATE}</span>
     </div>
   );
 }
@@ -91,7 +91,7 @@ function Event({ event, ready }: { event: (typeof EVENTS)[number]; ready: boolea
   return (
     <div
       style={{ top, height, background: tint(event.hue), color: ink(event.hue) }}
-      className="absolute right-0 left-7 overflow-hidden rounded-[4px] pt-1 pl-2.5 text-[10px] leading-none font-medium"
+      className="absolute right-0 left-7 overflow-hidden rounded-[4px] pt-1 pl-2.5 text-[11px] leading-none font-medium"
     >
       <span style={{ background: bar(event.hue) }} className="absolute inset-y-0 left-0 w-0.5" />
       {event.title}

@@ -105,7 +105,7 @@ function Player({ label, children }: { label: string; children: React.ReactNode 
       >
         {children}
       </div>
-      <p className="mt-3 text-center text-[12px] text-tertiary md:text-[13px]">{label}</p>
+      <p className="mt-3 text-center text-[13px] text-tertiary md:text-[14px]">{label}</p>
     </div>
   );
 }
@@ -200,7 +200,7 @@ function Clip({
 function Controls({ progress, quality }: { progress: number; quality: string }) {
   return (
     <>
-      <span className="absolute top-2.5 right-2.5 rounded-full bg-black/30 px-1.5 py-1 text-[10px] leading-none font-medium text-white/90 tabular-nums backdrop-blur-sm">
+      <span className="absolute top-2.5 right-2.5 rounded-full bg-black/30 px-1.5 py-1 text-[11px] leading-none font-medium text-white/90 tabular-nums backdrop-blur-sm">
         {quality}
       </span>
       <div className="absolute inset-x-0 bottom-0 flex h-14 items-end gap-2.5 bg-linear-to-t/srgb from-black/60 to-transparent px-3 pb-3">

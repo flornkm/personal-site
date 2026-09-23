@@ -47,7 +47,7 @@ export function StaticShell() {
 
   return (
     <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
-      <div className="relative flex min-h-[24rem] items-center justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
+      <div className="relative flex min-h-[25rem] items-center justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-8 dark:outline-white/8">
         {/* The app's window is the viewport and is always there; what changes is what the app
             has put inside it. Same recipe as the article's browser window: a soft frame with the
             title bar sitting directly on it, and the folders and messages as two panels raised
@@ -55,7 +55,7 @@ export function StaticShell() {
             Arriving content fades in; on replay it is gone at once. */}
         <div
           aria-hidden
-          className="mb-8 flex h-64 w-full max-w-[26rem] flex-col overflow-hidden rounded-xl bg-tertiary text-[13px] leading-none smooth-shadow-ring-sm dark:bg-surface-secondary dark:smooth-ring-white/10"
+          className="mb-8 flex h-68 w-full max-w-[28rem] flex-col overflow-hidden rounded-xl bg-tertiary text-[14px] leading-none smooth-shadow-ring-sm dark:bg-surface-secondary dark:smooth-ring-white/10"
         >
           <div
             className={cn(
@@ -111,7 +111,7 @@ export function StaticShell() {
                 onClick={() => replay(option.value)}
                 aria-pressed={active}
                 className={cn(
-                  "relative w-[6.5rem] cursor-pointer whitespace-nowrap rounded-full py-1 text-[12px] font-medium transition-colors",
+                  "relative w-[6.5rem] cursor-pointer whitespace-nowrap rounded-full py-1 text-[13px] font-medium transition-colors",
                   "outline-none focus-visible:ring-2 focus-visible:ring-default",
                   active ? "text-primary" : "text-tertiary hover:text-secondary",
                 )}

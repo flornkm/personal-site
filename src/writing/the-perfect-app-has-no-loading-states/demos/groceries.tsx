@@ -27,7 +27,7 @@ export function GroceriesPage({ ready, shell = true }: { ready: boolean[]; shell
     <div className="space-y-2">
       <Header ready={ready[0]} />
       <List ready={ready[1]} />
-      {shell ? <AddRow /> : <div className="h-7" />}
+      {shell ? <AddRow /> : <div className="h-8" />}
     </div>
   );
 }
@@ -35,16 +35,16 @@ export function GroceriesPage({ ready, shell = true }: { ready: boolean[]; shell
 function Header({ ready }: { ready: boolean }) {
   if (!ready) {
     return (
-      <div className="flex h-5 items-center">
+      <div className="flex h-6 items-center">
         <Skeleton className="rounded-full h-2.5 w-16" />
         <Skeleton className="rounded-full ml-auto h-2 w-10" />
       </div>
     );
   }
   return (
-    <div className="flex h-5 items-center leading-none">
-      <span className="text-[13px] font-medium text-primary">Groceries</span>
-      <span className="ml-auto text-[11px] text-tertiary">Saturday</span>
+    <div className="flex h-6 items-center leading-none">
+      <span className="text-[14px] font-medium text-primary">Groceries</span>
+      <span className="ml-auto text-[12px] text-tertiary">Saturday</span>
     </div>
   );
 }
@@ -57,8 +57,8 @@ function List({ ready }: { ready: boolean }) {
     return (
       <div>
         {ITEMS.map((item) => (
-          <div key={item.label} className="flex h-7 items-center gap-2.5">
-            <Skeleton className="size-3.5 rounded-[4px]" />
+          <div key={item.label} className="flex h-8 items-center gap-2.5">
+            <Skeleton className="size-4 rounded-[4px]" />
             <Skeleton className="rounded-full h-2 w-20" />
           </div>
         ))}
@@ -89,19 +89,19 @@ function ListItem({ item, onToggle }: { item: Item; onToggle: () => void }) {
       role="checkbox"
       aria-checked={item.done}
       onClick={onToggle}
-      className="flex h-7 w-full cursor-pointer items-center gap-2.5 text-left text-[12px] leading-none outline-none focus-visible:ring-2 focus-visible:ring-default"
+      className="flex h-8 w-full cursor-pointer items-center gap-2.5 text-left text-[13px] leading-none outline-none focus-visible:ring-2 focus-visible:ring-default"
     >
       {/* Checking eases in; unchecking snaps. Undoing is a correction and should not be made to
           wait for a fade, so every transition on the box and the mark is gated on `done`. */}
       <span
         style={item.done ? { background: BLUE } : undefined}
         className={cn(
-          "flex size-3.5 shrink-0 items-center justify-center rounded-[4px]",
+          "flex size-4 shrink-0 items-center justify-center rounded-[4px]",
           item.done ? "transition-colors duration-150 ease-out" : "transition-none",
           !item.done && "outline -outline-offset-1 outline-black/15 dark:outline-white/20",
         )}
       >
-        <svg viewBox="0 0 12 12" aria-hidden className="size-3">
+        <svg viewBox="0 0 12 12" aria-hidden className="size-3.5">
           {/* pathLength normalises the stroke to 1, so the dash offset is a plain 0-1 progress
               that Safari animates as happily as Chrome. Delayed a beat so the fill lands first. */}
           <path
@@ -138,11 +138,11 @@ function ListItem({ item, onToggle }: { item: Item; onToggle: () => void }) {
 // Part of the app shell rather than of the data, so it is there before anything has loaded.
 function AddRow() {
   return (
-    <div className="flex h-7 items-center gap-2.5 text-[12px] leading-none text-tertiary">
-      <span className="flex size-3.5 items-center justify-center">
+    <div className="flex h-8 items-center gap-2.5 text-[13px] leading-none text-tertiary">
+      <span className="flex size-4 items-center justify-center">
         {/* Unmasked: the masked build shares one <mask> id across every copy of the icon, and a
             copy inside a hidden page takes the mask down with it for the visible ones. */}
-        <IconPlusSmall size={14} mode="raw" />
+        <IconPlusSmall size={16} mode="raw" />
       </span>
       Add item
     </div>

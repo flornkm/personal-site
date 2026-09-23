@@ -14,19 +14,24 @@ import { CALENDAR_DATE, CALENDAR_PARTS, CalendarPage } from "./calendar";
    than the request needs, so the click lands on a page that is already there.
 
    The prefetching browser is given most of the article's own claim: its request is short enough
-   that any unhurried hover covers it, while a click that beats it still shows the remainder as a
-   skeleton, so the mechanism stays visible. The other browser pays the full request after the
-   click. */
+   that a settled hover covers it, while a quick click that beats it still shows a short skeleton,
+   so the mechanism stays visible. The other browser pays the full request after the click. */
 
 // What the click-side browser waits for: roughly a list endpoint on decent wifi.
 const FETCH_MS = 450;
 // What the hover-side browser waits for, from the moment the pointer arrives.
-const PREFETCH_MS = 100;
+const PREFETCH_MS = 300;
+// The least time the day view shows its skeleton when the click beats the request. A hover
+// that has rested on the row long enough opens the day instantly, as a real prefetch would; a
+// click that lands before the request is back would otherwise show the last few milliseconds
+// of skeleton, too short to read, so it is held for this long instead.
+const FLASH_MS = 150;
 
 export function PrefetchOnHover() {
   return (
-    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard lg:max-w-[560px]">
-      <div className="grid gap-4 @md:grid-cols-2">
+    <figure className="not-prose max-lg:-mx-4 @container mx-auto my-10 font-pretendard">
+      {/* Same breakout as the opening figure, to 640px. */}
+      <div className="grid gap-4 @md:grid-cols-2 lg:ml-[50%] lg:w-[640px] lg:-translate-x-1/2">
         <NavigatingPanel label="Fetch on click" prefetch={false} />
         <NavigatingPanel label="Prefetch on hover" prefetch />
       </div>
@@ -39,7 +44,9 @@ type Page = "home" | "day";
 function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean }) {
   const [page, setPage] = useState<Page>("home");
   const [loaded, setLoaded] = useState(false);
+  const [flashed, setFlashed] = useState(false);
   const timer = useRef<number | null>(null);
+  const flash = useRef<number | null>(null);
 
   // Idempotent: hover, focus, touch and the click itself all funnel into one request, and only
   // the first of them starts it. Whichever starts it sets how long it takes.
@@ -49,8 +56,13 @@ function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean
   }
 
   function open() {
-    fetchDay(FETCH_MS);
     setPage("day");
+    if (loaded) {
+      setFlashed(true);
+      return;
+    }
+    fetchDay(FETCH_MS);
+    flash.current = window.setTimeout(() => setFlashed(true), FLASH_MS);
   }
 
   // Going back also forgets the cache, so the figure can be tried again from a cold start. A
@@ -58,31 +70,35 @@ function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean
   // is no demo.
   function back() {
     if (timer.current !== null) window.clearTimeout(timer.current);
+    if (flash.current !== null) window.clearTimeout(flash.current);
     timer.current = null;
+    flash.current = null;
     setLoaded(false);
+    setFlashed(false);
     setPage("home");
   }
 
   const onDay = page === "day";
-  const ready = Array.from({ length: CALENDAR_PARTS }, () => loaded);
+  const shown = loaded && flashed;
+  const ready = Array.from({ length: CALENDAR_PARTS }, () => shown);
 
   return (
     // Stacked on narrow screens the panel would span the full column, which is wide for a
     // phone-sized app; capped and centred there, full column width once the two sit side by side.
-    <div className="mx-auto w-full max-w-[300px] @md:max-w-none">
+    <div className="mx-auto w-full max-w-[320px] @md:max-w-none">
       {/* No browser around this one. The panel's own title row carries the navigation: a back
           button appears in it on the day view, and the row is the same height on both pages.
           The whole page area is pinned to one height, so switching pages never moves anything. */}
-      <div className="rounded-[10px] bg-surface p-3.5 pt-2.5 smooth-shadow-ring-xs dark:smooth-ring-white/6">
-        <div className="h-[152px] space-y-3">
-          <div className="flex h-5 items-center gap-1 leading-none">
+      <div className="rounded-[10px] bg-surface p-4 pt-3 smooth-shadow-ring-xs dark:smooth-ring-white/6">
+        <div className="h-[166px] space-y-3">
+          <div className="flex h-6 items-center gap-1 leading-none">
             {onDay && (
               <button
                 type="button"
                 aria-label="Back"
                 onClick={back}
                 className={cn(
-                  "-ml-1 flex size-5 cursor-pointer items-center justify-center rounded-md text-secondary",
+                  "-ml-1 flex size-6 cursor-pointer items-center justify-center rounded-md text-secondary",
                   "transition-colors hover:bg-black/5 dark:hover:bg-white/5",
                   "outline-none focus-visible:ring-2 focus-visible:ring-default",
                 )}
@@ -90,10 +106,10 @@ function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean
                 <IconChevronLeft size={12} mode="raw" />
               </button>
             )}
-            <span className="text-[13px] font-medium text-primary">
+            <span className="text-[14px] font-medium text-primary">
               {onDay ? "Today" : "Calendar"}
             </span>
-            {onDay && <DayDate ready={loaded} />}
+            {onDay && <DayDate ready={shown} />}
           </div>
           {onDay ? (
             <CalendarPage ready={ready} header={false} />
@@ -102,14 +118,14 @@ function NavigatingPanel({ label, prefetch }: { label: string; prefetch: boolean
           )}
         </div>
       </div>
-      <p className="mt-3 text-center text-[13px] text-tertiary">{label}</p>
+      <p className="mt-3 text-center text-[14px] text-tertiary">{label}</p>
     </div>
   );
 }
 
 function DayDate({ ready }: { ready: boolean }) {
   if (!ready) return <Skeleton className="rounded-full ml-auto h-2 w-14" />;
-  return <span className="ml-auto text-[11px] text-tertiary">{CALENDAR_DATE}</span>;
+  return <span className="ml-auto text-[12px] text-tertiary">{CALENDAR_DATE}</span>;
 }
 
 const DAYS = [
@@ -119,7 +135,7 @@ const DAYS = [
 ];
 
 const DAY_ROW =
-  "-mx-2 flex h-8 w-[calc(100%+1rem)] items-center rounded-lg bg-surface-tertiary px-2 text-[12px] leading-none";
+  "-mx-2 flex h-9 w-[calc(100%+1rem)] items-center rounded-lg bg-surface-tertiary px-2 text-[13px] leading-none";
 
 function Home({ onOpen, onIntent }: { onOpen: () => void; onIntent?: () => void }) {
   const [today, ...rest] = DAYS;

@@ -59,7 +59,7 @@ export function Browser({
               <IconChevronLeft size={12} mode="raw" />
             </button>
           )}
-          <div className="relative flex h-6 flex-1 items-center justify-center overflow-hidden rounded-md bg-black/5 dark:bg-white/5">
+          <div className="relative flex h-7 flex-1 items-center justify-center overflow-hidden rounded-md bg-black/5 dark:bg-white/5">
             {progress && (
               <span
                 key={run}
@@ -68,9 +68,9 @@ export function Browser({
                 className="absolute bottom-0 left-0 h-0.5 animate-address-progress"
               />
             )}
-            <span className="relative text-[10px] leading-none text-secondary">{url}</span>
+            <span className="relative text-[11px] leading-none text-secondary">{url}</span>
             <IconArrowRotateClockwise
-              size={10}
+              size={11}
               mode="raw"
               className="absolute right-2 text-tertiary"
             />
@@ -80,7 +80,7 @@ export function Browser({
             dark mode it is the lighter surface on a darker frame, with only a faint seam: the
             frame's ring already draws the one bright edge this window gets. */}
         <div className="px-0.5 pb-0.5">
-          <div className="relative rounded-[10px] bg-surface p-3.5 smooth-shadow-ring-xs dark:smooth-ring-white/6">
+          <div className="relative rounded-[10px] bg-surface p-4 smooth-shadow-ring-xs dark:smooth-ring-white/6">
             <div className={cn(hidden && "invisible")}>{children}</div>
             {overlay && (
               <div className="absolute inset-0 flex items-center justify-center">{overlay}</div>
@@ -88,7 +88,7 @@ export function Browser({
           </div>
         </div>
       </div>
-      <p className="mt-3 text-center text-[13px] text-tertiary">{label}</p>
+      <p className="mt-3 text-center text-[14px] text-tertiary">{label}</p>
     </div>
   );
 }

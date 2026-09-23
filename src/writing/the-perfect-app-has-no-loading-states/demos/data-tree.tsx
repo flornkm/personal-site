@@ -73,13 +73,13 @@ export function DataTree() {
   return (
     <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="relative flex min-h-[16rem] items-center justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
-        <p className="absolute top-4 left-4 text-[12px] leading-none text-tertiary tabular-nums md:top-6 md:left-6">
+        <p className="absolute top-4 left-4 text-[13px] leading-none text-tertiary tabular-nums md:top-6 md:left-6">
           <span className="font-medium text-primary">{(elapsed / 1000).toFixed(2)} s</span>
           {" · "}
           {rowsReturned} rows
         </p>
 
-        <svg viewBox={`0 0 ${W} 140`} aria-hidden className="mb-8 w-full max-w-[320px] select-none">
+        <svg viewBox={`0 0 ${W} 140`} aria-hidden className="mb-8 w-full max-w-[360px] select-none">
           {LISTS.map((x, list) => {
             const onPath = scope === "list" && list === WANTED;
             return (
@@ -121,7 +121,7 @@ export function DataTree() {
                 onClick={() => runQuery(option.value)}
                 aria-pressed={active}
                 className={cn(
-                  "relative w-[5.25rem] cursor-pointer whitespace-nowrap rounded-full py-1 text-[12px] font-medium transition-colors",
+                  "relative w-[5.25rem] cursor-pointer whitespace-nowrap rounded-full py-1 text-[13px] font-medium transition-colors",
                   "outline-none focus-visible:ring-2 focus-visible:ring-default",
                   active ? "text-primary" : "text-tertiary hover:text-secondary",
                 )}

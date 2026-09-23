@@ -84,12 +84,9 @@ function NavigatingBrowser({ label, prefetch }: { label: string; prefetch: boole
 function Home({ onOpen, onIntent }: { onOpen: () => void; onIntent?: () => void }) {
   return (
     <div className="space-y-2">
-      {/* Inset to the row's own text edge, not the box around it. */}
-      <div className="flex h-5 items-center px-3 leading-none">
+      <div className="flex h-5 items-center leading-none">
         <span className="text-[13px] font-medium text-primary">Lists</span>
       </div>
-      {/* Intent is the pointer arriving, keyboard focus landing, or a finger touching down:
-          each is the earliest moment this row is likely to be opened. */}
       {/* Intent is the pointer arriving, keyboard focus landing, or a finger touching down:
           each is the earliest moment this row is likely to be opened. */}
       <button
@@ -99,7 +96,9 @@ function Home({ onOpen, onIntent }: { onOpen: () => void; onIntent?: () => void 
         onFocus={onIntent}
         onTouchStart={onIntent}
         className={cn(
-          "flex h-9 w-full cursor-pointer items-center rounded-lg bg-surface-tertiary px-3 text-[12px] leading-none",
+          // The row's box hangs out past the heading by its own padding, so its label sits on
+          // the same left edge as "Lists" rather than the box doing.
+          "-mx-2 flex h-8 w-[calc(100%+1rem)] cursor-pointer items-center rounded-lg bg-surface-tertiary px-2 text-[12px] leading-none",
           "transition-colors duration-150 hover:bg-quaternary dark:hover:bg-interactive-active",
           "outline-none focus-visible:ring-2 focus-visible:ring-default",
         )}
@@ -111,7 +110,7 @@ function Home({ onOpen, onIntent }: { onOpen: () => void; onIntent?: () => void 
         </span>
       </button>
       {/* Matches the list page's height so switching pages never moves the window. */}
-      <div className="h-33" />
+      <div className="h-34" />
     </div>
   );
 }

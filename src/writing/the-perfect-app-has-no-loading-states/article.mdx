@@ -17,9 +17,10 @@ import { StaticShell } from "./demos/static-shell";
 Pretty early on, when I was learning how to write code, I was faced with the question of how to show and implement loading states. Over the years, and especially since the shift to agentic coding, this has become a daily concern.
 
 Agents love them. A simple spinner - done.
-*Is it really that easy though?*
+_Is it really that easy though?_
 
 There is this amazing article, ["The best loading states are no loading states"](https://jjenzz.com/best-loading-states-are-no-loading-states), which I took as inspiration to elaborate further. I'm convinced that more than one solution can be correct, but if done incorrectly, loading states will feel broken.
+
 <br />
 
 <LoadingStrategies />
@@ -42,7 +43,7 @@ The other important part is caching content properly. Once a user has visited a 
 
 ### 2. Custom loading states should feel fast
 
-This one is very important. Loading states shouldn't feel smooth, slow or relaxing. They need to feel extremely fast. Users should get the impression that the app is working really hard to show content *ASAP*.
+This one is very important. Loading states shouldn't feel smooth, slow or relaxing. They need to feel extremely fast. Users should get the impression that the app is working really hard to show content _ASAP_.
 
 <ShimmerSpeed />
 
@@ -57,6 +58,7 @@ This is one of the cases where the backend directly shapes the frontend. How you
 There is not a single use case where a loading spinner makes sense for fetching data. The only arguably valid one, and even then it needs a lot of care, is something like a spinner next to an agent's reasoning trace. But even there I'd argue there are better ways to show it. Using a spinner to conditionally render a dynamic component only screams that you were too lazy to care. Don't do that.
 
 One place where spinners are still used almost everywhere: video players. There are many reasons for this, but whenever I look into these cases myself, I find one or more of the following issues:
+
 - The video is only served in 4K
 - The whole video file is sent at once instead of being streamed
 - The player is embedded as a third-party iframe
@@ -79,25 +81,30 @@ One thing that keeps users from using the app right away is a root-level loading
 Please audit the loading states of our app and fix what you find:
 
 1. Prefetch and cache
+
 - Prefetch route data on link hover and focus, not only on click
 - Keep visited pages in a cache so navigating back never refetches
 - Check that the cache is used before any placeholder is shown
 
 2. Speed
+
 - Skeletons and shimmers should feel fast, not calm
 - Shorten placeholder animations to under one second per cycle
 - Resolve parts of the page as soon as their data arrives, don't wait for everything
 
 3. Data
+
 - List which components wait on which queries
 - Flag waterfalls where one request has to finish before the next one starts
 - Move slow queries out of the critical path or split them
 
 4. Spinners
+
 - Find every spinner. Replace each one with prefetched content, a skeleton, or nothing
 - Videos: serve smaller sizes, stream instead of sending the whole file, no third-party iframes
 
 5. Static shell
+
 - Navigation, header and layout should render on the first frame
 - A root-level loading state must never block navigation
 

@@ -25,7 +25,7 @@ There is this amazing article, ["The best loading states are no loading states"]
 
 <LoadingStrategies />
 
-One thing becomes pretty clear: on the web, a first visit will always have a loading state when content is dynamic. Whether it happens upfront (the data is fetched on the server and the first paint already contains it, which many people do on public facing sites for SEO) or on the client, there will be some kind of delay. Server-side caching makes this pretty fast, but the initial document is still larger than a shell that shows a root-level spinner right away.
+One thing becomes pretty clear: the first visit is the one loading state you can't get around. Dynamic content has to come from somewhere, either the server puts it into the first paint (which many do on public facing sites for SEO) or the client fetches it right after. Fine. The interesting part is everything after that - a perfect app makes the most of that first visit and then never makes you wait again.
 
 ## Once a user is on the page, many sites still show spinners or skeletons. What to do then?
 

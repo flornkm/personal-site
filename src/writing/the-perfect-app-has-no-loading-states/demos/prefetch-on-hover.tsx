@@ -128,46 +128,30 @@ function DayDate({ ready }: { ready: boolean }) {
   return <span className="ml-auto text-[12px] text-tertiary">{CALENDAR_DATE}</span>;
 }
 
-const DAYS = [
-  { label: "Today", meta: "3 events" },
-  { label: "Tomorrow", meta: "1 event" },
-  { label: "Thursday", meta: "2 events" },
-];
-
-const DAY_ROW =
-  "-mx-2 flex h-9 w-[calc(100%+1rem)] items-center rounded-lg bg-surface-tertiary px-2 text-[13px] leading-none";
+const TODAY = { label: "Today", meta: "3 events" };
 
 function Home({ onOpen, onIntent }: { onOpen: () => void; onIntent?: () => void }) {
-  const [today, ...rest] = DAYS;
   return (
-    <div className="space-y-1">
-      {/* Intent is the pointer arriving, keyboard focus landing, or a finger touching down:
-          each is the earliest moment this row is likely to be opened. Only today opens; the
-          other days are there so the list reads as a list. */}
-      <button
-        type="button"
-        onClick={onOpen}
-        onPointerEnter={onIntent}
-        onFocus={onIntent}
-        onTouchStart={onIntent}
-        className={cn(
-          DAY_ROW,
-          "cursor-pointer transition-colors duration-150 hover:bg-quaternary dark:hover:bg-interactive-active",
-          "outline-none focus-visible:ring-2 focus-visible:ring-default",
-        )}
-      >
-        <DayRow day={today} />
-      </button>
-      {rest.map((day) => (
-        <div key={day.label} className={DAY_ROW}>
-          <DayRow day={day} />
-        </div>
-      ))}
-    </div>
+    // Intent is the pointer arriving, keyboard focus landing, or a finger touching down:
+    // each is the earliest moment this row is likely to be opened.
+    <button
+      type="button"
+      onClick={onOpen}
+      onPointerEnter={onIntent}
+      onFocus={onIntent}
+      onTouchStart={onIntent}
+      className={cn(
+        "-mx-2 flex h-9 w-[calc(100%+1rem)] items-center rounded-lg bg-surface-tertiary px-2 text-[13px] leading-none",
+        "cursor-pointer transition-colors duration-150 hover:bg-quaternary dark:hover:bg-interactive-active",
+        "outline-none focus-visible:ring-2 focus-visible:ring-default",
+      )}
+    >
+      <DayRow day={TODAY} />
+    </button>
   );
 }
 
-function DayRow({ day }: { day: (typeof DAYS)[number] }) {
+function DayRow({ day }: { day: typeof TODAY }) {
   return (
     <>
       <span className="text-primary">{day.label}</span>

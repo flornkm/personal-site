@@ -111,7 +111,7 @@ export function StaticShell() {
                 onClick={() => replay(option.value)}
                 aria-pressed={active}
                 className={cn(
-                  "relative w-[6.5rem] cursor-pointer whitespace-nowrap rounded-full py-1 text-[13px] font-medium transition-colors",
+                  "relative w-[7.5rem] cursor-pointer whitespace-nowrap rounded-full py-1 text-[13px] font-medium transition-colors",
                   "outline-none focus-visible:ring-2 focus-visible:ring-default",
                   active ? "text-primary" : "text-tertiary hover:text-secondary",
                 )}

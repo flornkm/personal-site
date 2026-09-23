@@ -20,6 +20,10 @@ const LOAD_MS = 1400;
 
 const FOLDERS = ["Inbox", "Sent", "Archive"];
 
+// A panel sits on the frame the way the browser viewport does in browser.tsx: the ring is the
+// only edge it gets, so no border is drawn.
+const PANEL = "rounded-lg bg-surface p-1.5 smooth-shadow-ring-xs dark:smooth-ring-white/6";
+
 const MAILS = [
   { from: "Anna", subject: "Re: Berlin trip" },
   { from: "Jonas", subject: "Slides for Thursday" },
@@ -45,10 +49,13 @@ export function StaticShell() {
     <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[520px] font-pretendard">
       <div className="relative flex min-h-[24rem] items-center justify-center rounded-sm p-4 outline -outline-offset-1 outline-black/5 md:p-12 dark:outline-white/8">
         {/* The app's window is the viewport and is always there; what changes is what the app
-            has put inside it. Arriving content fades in; on replay it is gone at once. */}
+            has put inside it. Same recipe as the article's browser window: a soft frame with the
+            title bar sitting directly on it, and the folders and messages as two panels raised
+            off it, so the sections read as surfaces rather than as regions cut up by rules.
+            Arriving content fades in; on replay it is gone at once. */}
         <div
           aria-hidden
-          className="mb-8 flex h-64 w-full max-w-[26rem] flex-col overflow-hidden rounded-lg bg-surface text-[13px] leading-none smooth-shadow-ring-sm"
+          className="mb-8 flex h-64 w-full max-w-[26rem] flex-col overflow-hidden rounded-xl bg-tertiary text-[13px] leading-none smooth-shadow-ring-sm dark:bg-surface-secondary dark:smooth-ring-white/10"
         >
           <div
             className={cn(
@@ -56,12 +63,12 @@ export function StaticShell() {
               shellVisible ? "opacity-100" : "opacity-0 transition-none",
             )}
           >
-            <div className="flex h-11 shrink-0 items-center border-b border-primary px-4">
+            <div className="flex h-10 shrink-0 items-center px-4">
               <span className="font-medium text-primary">Mail</span>
               <span className="ml-auto text-tertiary">Compose</span>
             </div>
-            <div className="flex min-h-0 flex-1">
-              <div className="w-28 shrink-0 space-y-1 border-r border-primary p-2.5">
+            <div className="flex min-h-0 flex-1 gap-1.5 px-1.5 pb-1.5">
+              <div className={cn(PANEL, "w-28 shrink-0 space-y-0.5")}>
                 {FOLDERS.map((folder, index) => (
                   <div
                     key={folder}
@@ -76,7 +83,7 @@ export function StaticShell() {
                   </div>
                 ))}
               </div>
-              <div className="min-w-0 flex-1 p-2.5">
+              <div className={cn(PANEL, "min-w-0 flex-1")}>
                 {MAILS.map((mail) => (
                   <MailRow key={mail.from} mail={mail} ready={loaded} />
                 ))}

@@ -25,9 +25,9 @@ const FOLDERS = ["Inbox", "Sent", "Archive"];
 const PANEL = "rounded-lg bg-surface p-1.5 smooth-shadow-ring-xs dark:smooth-ring-white/6";
 
 const MAILS = [
-  { from: "Anna", subject: "Re: Berlin trip" },
+  { from: "Clara", subject: "Re: Berlin trip" },
   { from: "Jonas", subject: "Slides for Thursday" },
-  { from: "Mara", subject: "Lunch on Friday?" },
+  { from: "Theo", subject: "Lunch on Friday?" },
 ];
 
 export function StaticShell() {

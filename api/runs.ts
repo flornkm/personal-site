@@ -11,8 +11,7 @@ const runsRef = db.ref("runs");
 const PAGE_SIZE = 10;
 
 // Public, read-only feed for the live writing post, one page per request (`?cursor=` for the
-// next). Firebase holds coordinate-free shapes; publicRunsPage loosens home routes before they
-// go out, so none can be matched to a map.
+// next).
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
     res.statusCode = 405;

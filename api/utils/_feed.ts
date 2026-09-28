@@ -1,22 +1,14 @@
 import { createHash } from "node:crypto";
 
-import { loosenPath, MIN_LOOSEN_METERS, type RoutePath } from "./_polyline.js";
+import { MIN_STYLIZE_METERS, stylizePath, type RoutePath } from "./_polyline.js";
 import type { StoredRun } from "./_strava.js";
 
-// Countries where runs start near home, by ISO alpha-2 code (AE covers Dubai). Their routes
-// are loosened on the way out of every response, so the exact shape, which could be matched
-// against a street map, never leaves the server. Travel runs keep their real shape.
-const PRIVATE_COUNTRY_CODES = new Set(["DE", "AE", "NL"]);
+const STYLIZED_COUNTRY_CODES = new Set(["DE", "AE", "NL"]);
 
-function isPrivate(run: StoredRun): boolean {
-  return !!run.countryCode && PRIVATE_COUNTRY_CODES.has(run.countryCode);
+function isStylized(run: StoredRun): boolean {
+  return !!run.countryCode && STYLIZED_COUNTRY_CODES.has(run.countryCode);
 }
 
-// Seeds each run's rotation and mirror from a hash of its exact stored route. Deterministic,
-// so every response carries the same loosened shape: fresh randomness per request would let
-// anyone average many responses back towards the real route. And the exact route of a home
-// run never leaves the server, so nobody outside it can recompute the seed; it works as a
-// per-run secret without any env config.
 function seededRandom(run: StoredRun & { path: RoutePath }): () => number {
   const digest = createHash("sha256").update(`${run.id}\n${run.path.d}`).digest();
   let offset = 0;
@@ -44,30 +36,29 @@ function sliceSeries(
   );
 }
 
-// Whether a stored run may appear in the feed at all. Cheap (no geometry), so paging can decide
-// which runs fill a page before loosening only those.
+// Cheap (no geometry), so paging can pick a page's runs before stylizing only those.
 function isVisible(run: StoredRun): boolean {
   if (run.sportType === "VirtualRun") return false;
-  // A route-less run is only shown when it's a known indoor run, drawn as track laps.
   if (run.path === null) return run.indoor === true;
-  // A home run too short to loosen is withheld rather than sent raw.
-  return !isPrivate(run) || run.distanceMeters >= MIN_LOOSEN_METERS;
+  return !isStylized(run) || run.distanceMeters >= MIN_STYLIZE_METERS;
 }
 
-// A visible run as it's served. Home routes are swapped for their loosened shape, with the
-// per-point series re-aligned to it; null only for a degenerate route that can't be loosened.
 function toPublicRun(run: StoredRun): StoredRun | null {
-  if (!run.path || !isPrivate(run)) return run;
+  if (!run.path || !isStylized(run)) return run;
 
-  const loose = loosenPath(run.path, run.distanceMeters, seededRandom({ ...run, path: run.path }));
-  if (!loose) return null;
+  const styled = stylizePath(
+    run.path,
+    run.distanceMeters,
+    seededRandom({ ...run, path: run.path }),
+  );
+  if (!styled) return null;
 
-  const count = (loose.path.d.match(/[ML]/g) ?? []).length;
+  const count = (styled.path.d.match(/[ML]/g) ?? []).length;
   return {
     ...run,
-    path: loose.path,
-    temperatures: sliceSeries(run.temperatures, loose.from, loose.to, count),
-    heartRates: sliceSeries(run.heartRates, loose.from, loose.to, count),
+    path: styled.path,
+    temperatures: sliceSeries(run.temperatures, styled.from, styled.to, count),
+    heartRates: sliceSeries(run.heartRates, styled.from, styled.to, count),
   };
 }
 
@@ -78,10 +69,8 @@ function cursorOf(run: StoredRun): string {
 
 export type RunsPage = { runs: StoredRun[]; nextCursor: string | null };
 
-// The single definition of what the public sees — used by the /api/runs feed and by everything
-// that derives display data from it (e.g. the writing list's "newest run" date), so they can
-// never disagree. Keyset-paged: `cursor` is the last run of the previous page, so runs synced
-// in between never shift a page or repeat a run the way offsets would.
+// Keyset-paged: `cursor` is the last run of the previous page, so runs synced in between never
+// shift a page or repeat a run the way offsets would.
 export function publicRunsPage(
   stored: StoredRun[],
   { cursor, limit }: { cursor?: string | null; limit: number },

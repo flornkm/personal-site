@@ -6,7 +6,7 @@ import { trackLaps } from "./runs";
 
 const publicRuns = (stored: StoredRun[]) => publicRunsPage(stored, { limit: 100 }).runs;
 
-// A 6 km out-and-back-ish loop: 60 points across the 100-unit box.
+// A 6 km loop: 60 points across the 100-unit box.
 const LOOP_D = Array.from({ length: 60 }, (_, i) => {
   const a = (i / 59) * Math.PI * 1.8;
   return `${i === 0 ? "M" : "L"}${(50 + 45 * Math.cos(a)).toFixed(1)} ${(40 + 30 * Math.sin(a)).toFixed(1)}`;
@@ -35,7 +35,7 @@ function run(overrides: Partial<StoredRun>): StoredRun {
 }
 
 describe("publicRuns", () => {
-  test("never serves a home route's real shape, and serves the same loosened one every time", () => {
+  test("stylizes routes in listed countries, the same way every time", () => {
     const [first] = publicRuns([run({})]);
     const [second] = publicRuns([run({})]);
     expect(first.path?.d).not.toBe(LOOP_D);
@@ -45,7 +45,7 @@ describe("publicRuns", () => {
     expect(first.temperatures).toHaveLength(points);
   });
 
-  test("withholds a home run too short to loosen", () => {
+  test("skips a stylized-country run too short to stylize", () => {
     expect(publicRuns([run({ distanceMeters: 1000 })])).toEqual([]);
   });
 

@@ -68,15 +68,10 @@ export function toNormalizedPath(points: [number, number][]): RoutePath | null {
   return { d, w: +(spanX * scale).toFixed(1), h };
 }
 
-// Distance cut from each end of a loosened route, so neither the start nor the finish
-// (usually the front door) survives.
-const PRIVACY_TRIM_METERS = 500;
-// Spacing the route is resampled to before smoothing; anything shorter than this (street
-// corners, short blocks) melts into the curve.
-const LOOSEN_STEP_METERS = 150;
+const EDGE_TRIM_METERS = 500;
+const STYLIZE_STEP_METERS = 150;
 const SMOOTHING_PASSES = 3;
-// Shortest run loosenPath can handle: both trims plus a couple of steps in between.
-export const MIN_LOOSEN_METERS = PRIVACY_TRIM_METERS * 2 + LOOSEN_STEP_METERS * 2;
+export const MIN_STYLIZE_METERS = EDGE_TRIM_METERS * 2 + STYLIZE_STEP_METERS * 2;
 
 function parsePoints(d: string): [number, number][] {
   const nums = (d.match(/-?\d*\.?\d+/g) ?? []).map(Number);
@@ -106,22 +101,19 @@ function chaikin(points: [number, number][]): [number, number][] {
   return out;
 }
 
-export type LoosenedPath = {
+export type StylizedPath = {
   path: RoutePath;
-  // Fraction of the original route (by length) the loosened one covers, for slicing the
-  // per-point series so they stay aligned with the line.
+  // Fraction of the original route (by length) this one covers, for slicing the per-point
+  // series so they stay aligned with the line.
   from: number;
   to: number;
 };
 
-// Deliberately lossy: trims both ends, resamples coarsely and smooths, then rotates and
-// optionally mirrors with the caller's `random`. The result still reads as the run but no
-// longer lines up with a street map. Returns null when the run is too short to trim.
-export function loosenPath(
+export function stylizePath(
   path: RoutePath,
   distanceMeters: number,
   random: () => number,
-): LoosenedPath | null {
+): StylizedPath | null {
   const points = parsePoints(path.d);
   if (points.length < 2) return null;
 
@@ -135,21 +127,21 @@ export function loosenPath(
   if (total <= 0 || distanceMeters <= 0) return null;
 
   const unitsPerMeter = total / distanceMeters;
-  const start = PRIVACY_TRIM_METERS * unitsPerMeter;
+  const start = EDGE_TRIM_METERS * unitsPerMeter;
   const end = total - start;
-  const step = LOOSEN_STEP_METERS * unitsPerMeter;
+  const step = STYLIZE_STEP_METERS * unitsPerMeter;
   if (end - start < step * 2) return null;
 
-  let loose: [number, number][] = [];
-  for (let at = start; at < end; at += step) loose.push(pointAt(points, cum, at));
-  loose.push(pointAt(points, cum, end));
-  for (let pass = 0; pass < SMOOTHING_PASSES; pass++) loose = chaikin(loose);
+  let styled: [number, number][] = [];
+  for (let at = start; at < end; at += step) styled.push(pointAt(points, cum, at));
+  styled.push(pointAt(points, cum, end));
+  for (let pass = 0; pass < SMOOTHING_PASSES; pass++) styled = chaikin(styled);
 
   const angle = random() * Math.PI * 2;
   const mirror = random() < 0.5 ? -1 : 1;
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  const turned = loose.map(([x, y]): [number, number] => [
+  const turned = styled.map(([x, y]): [number, number] => [
     mirror * (x * cos - y * sin),
     x * sin + y * cos,
   ]);

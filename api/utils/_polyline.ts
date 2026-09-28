@@ -75,6 +75,8 @@ const PRIVACY_TRIM_METERS = 500;
 // corners, short blocks) melts into the curve.
 const LOOSEN_STEP_METERS = 150;
 const SMOOTHING_PASSES = 3;
+// Shortest run loosenPath can handle: both trims plus a couple of steps in between.
+export const MIN_LOOSEN_METERS = PRIVACY_TRIM_METERS * 2 + LOOSEN_STEP_METERS * 2;
 
 function parsePoints(d: string): [number, number][] {
   const nums = (d.match(/-?\d*\.?\d+/g) ?? []).map(Number);

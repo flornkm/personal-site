@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions } from "@tanstack/react-query";
 
 export type RoutePath = { d: string; w: number; h: number };
 
@@ -281,18 +281,23 @@ export function trackLaps(
   };
 }
 
-export async function fetchRuns(): Promise<Run[]> {
-  const res = await fetch("/api/runs");
+export type RunsPage = { runs: Run[]; nextCursor: string | null };
+
+async function fetchRunsPage(cursor: string | null, signal: AbortSignal): Promise<RunsPage> {
+  const url = cursor ? `/api/runs?cursor=${encodeURIComponent(cursor)}` : "/api/runs";
+  const res = await fetch(url, { signal });
   if (!res.ok) throw new Error("Failed to load runs");
-  const data = (await res.json()) as { runs: Run[] };
-  return data.runs;
+  return (await res.json()) as RunsPage;
 }
 
-// Shared by the feed and the route loader's hover prefetch, so both read the same cache entry.
-// Fresh for as long as the API's own edge cache (s-maxage=300): a prefetch on hover must still
-// count as fresh when the page mounts a moment later, or the feed would fetch a second time.
-export const runsQueryOptions = queryOptions({
-  queryKey: ["runs"],
-  queryFn: fetchRuns,
+// Shared by the feed and the route loader's hover prefetch, so both read the same cache entry
+// (the prefetch fills the first page only). Fresh for as long as the API's own edge cache
+// (s-maxage=300): a prefetch on hover must still count as fresh when the page mounts a moment
+// later, or the feed would fetch a second time.
+export const runsInfiniteQueryOptions = infiniteQueryOptions({
+  queryKey: ["runs", "pages"],
+  queryFn: ({ pageParam, signal }) => fetchRunsPage(pageParam, signal),
+  initialPageParam: null as string | null,
+  getNextPageParam: (lastPage) => lastPage.nextCursor,
   staleTime: 5 * 60 * 1000,
 });

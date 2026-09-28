@@ -2,7 +2,7 @@ import { H1 } from "@/components/design-system/heading";
 import { useMdxContent } from "@/components/shared/mdx-content";
 import { Link } from "@/components/ui/link";
 import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
-import { runsQueryOptions } from "@/features/writing/lib/runs";
+import { runsInfiniteQueryOptions } from "@/features/writing/lib/runs";
 import { getContent, isWritingEntry, type WritingEntry } from "@/lib/mdx";
 import { queryClient } from "@/lib/query-client";
 import { absoluteUrl, canonicalLink, canonicalUrl } from "@/lib/site";
@@ -82,7 +82,7 @@ export const Route = createFileRoute("/writing/$id")({
     // Not awaited: navigation must never wait on it. Client only: the feed fetches a relative
     // URL, which has no origin on the server, and its SSR output is the skeleton either way.
     if (item.type === "live" && typeof window !== "undefined") {
-      void queryClient.prefetchQuery(runsQueryOptions);
+      void queryClient.prefetchInfiniteQuery(runsInfiniteQueryOptions);
     }
     return {
       ...item,

@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { publicRuns } from "../../../../api/utils/_feed";
+import { publicRunsPage } from "../../../../api/utils/_feed";
 import type { StoredRun } from "../../../../api/utils/_strava";
 import { trackLaps } from "./runs";
+
+const publicRuns = (stored: StoredRun[]) => publicRunsPage(stored, { limit: 100 }).runs;
 
 // A 6 km out-and-back-ish loop: 60 points across the 100-unit box.
 const LOOP_D = Array.from({ length: 60 }, (_, i) => {
@@ -57,6 +59,34 @@ describe("publicRuns", () => {
     const ghost = run({ id: "3", path: null, countryCode: null });
     const zwift = run({ id: "4", sportType: "VirtualRun", countryCode: null });
     expect(publicRuns([indoor, ghost, zwift])).toEqual([indoor]);
+  });
+});
+
+describe("publicRunsPage", () => {
+  const stored = Array.from({ length: 23 }, (_, i) =>
+    run({
+      id: String(i),
+      countryCode: "IT",
+      startDate: `2026-08-${String(i + 1).padStart(2, "0")}T18:00:00Z`,
+    }),
+  );
+
+  test("pages newest first, ten at a time, without gaps or repeats", () => {
+    const seen: string[] = [];
+    let cursor: string | null = null;
+    do {
+      const page = publicRunsPage(stored, { cursor, limit: 10 });
+      seen.push(...page.runs.map((r) => r.id));
+      cursor = page.nextCursor;
+    } while (cursor);
+    expect(seen).toEqual(stored.map((r) => r.id).reverse());
+  });
+
+  test("a run synced between pages doesn't shift the next page", () => {
+    const first = publicRunsPage(stored, { limit: 10 });
+    const newer = run({ id: "new", countryCode: "IT", startDate: "2026-09-30T18:00:00Z" });
+    const second = publicRunsPage([newer, ...stored], { cursor: first.nextCursor, limit: 10 });
+    expect(second.runs[0].id).toBe("12");
   });
 });
 

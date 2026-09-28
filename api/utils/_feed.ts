@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { loosenPath, type RoutePath } from "./_polyline.js";
+import { loosenPath, MIN_LOOSEN_METERS, type RoutePath } from "./_polyline.js";
 import type { StoredRun } from "./_strava.js";
 
 // Countries where runs start near home, by ISO alpha-2 code (AE covers Dubai). Their routes
@@ -44,14 +44,20 @@ function sliceSeries(
   );
 }
 
-// A stored run as it may be served, or null when it must not be. Home routes are swapped for
-// their loosened shape (with the per-point series re-aligned to it); a home run too short to
-// loosen is withheld rather than sent raw.
-function toPublicRun(run: StoredRun): StoredRun | null {
-  if (run.sportType === "VirtualRun") return null;
+// Whether a stored run may appear in the feed at all. Cheap (no geometry), so paging can decide
+// which runs fill a page before loosening only those.
+function isVisible(run: StoredRun): boolean {
+  if (run.sportType === "VirtualRun") return false;
   // A route-less run is only shown when it's a known indoor run, drawn as track laps.
-  if (run.path === null) return run.indoor === true ? run : null;
-  if (!isPrivate(run)) return run;
+  if (run.path === null) return run.indoor === true;
+  // A home run too short to loosen is withheld rather than sent raw.
+  return !isPrivate(run) || run.distanceMeters >= MIN_LOOSEN_METERS;
+}
+
+// A visible run as it's served. Home routes are swapped for their loosened shape, with the
+// per-point series re-aligned to it; null only for a degenerate route that can't be loosened.
+function toPublicRun(run: StoredRun): StoredRun | null {
+  if (!run.path || !isPrivate(run)) return run;
 
   const loose = loosenPath(run.path, run.distanceMeters, seededRandom({ ...run, path: run.path }));
   if (!loose) return null;
@@ -65,12 +71,30 @@ function toPublicRun(run: StoredRun): StoredRun | null {
   };
 }
 
-// The single definition of what the public sees — used by the /api/runs feed and by
-// everything that derives display data from it (e.g. the writing list's "newest run" date),
-// so they can never disagree.
-export function publicRuns(stored: StoredRun[]): StoredRun[] {
-  return stored
-    .map(toPublicRun)
-    .filter((run): run is StoredRun => run !== null)
-    .sort((a, b) => b.startDate.localeCompare(a.startDate));
+// Newest first, with the id breaking ties so the order (and so every cursor) is total.
+function cursorOf(run: StoredRun): string {
+  return `${run.startDate}~${run.id}`;
+}
+
+export type RunsPage = { runs: StoredRun[]; nextCursor: string | null };
+
+// The single definition of what the public sees — used by the /api/runs feed and by everything
+// that derives display data from it (e.g. the writing list's "newest run" date), so they can
+// never disagree. Keyset-paged: `cursor` is the last run of the previous page, so runs synced
+// in between never shift a page or repeat a run the way offsets would.
+export function publicRunsPage(
+  stored: StoredRun[],
+  { cursor, limit }: { cursor?: string | null; limit: number },
+): RunsPage {
+  const ordered = stored
+    .filter(isVisible)
+    .map((run) => ({ run, key: cursorOf(run) }))
+    .sort((a, b) => b.key.localeCompare(a.key));
+  const rest = cursor ? ordered.filter(({ key }) => key < cursor) : ordered;
+  const page = rest.slice(0, limit);
+
+  return {
+    runs: page.map(({ run }) => toPublicRun(run)).filter((run): run is StoredRun => run !== null),
+    nextCursor: rest.length > limit ? page[page.length - 1].key : null,
+  };
 }

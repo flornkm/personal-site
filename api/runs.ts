@@ -1,13 +1,18 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-import { publicRuns } from "./utils/_feed.js";
+import { publicRunsPage } from "./utils/_feed.js";
 import { db } from "./utils/_firebase.js";
 import type { StoredRun } from "./utils/_strava.js";
 
 const runsRef = db.ref("runs");
 
-// Public, read-only feed for the live writing post. Firebase holds coordinate-free shapes;
-// publicRuns loosens home routes before they go out, so none can be matched to a map.
+// Fixed server-side rather than a query param, so the edge cache only ever holds one variant
+// per cursor.
+const PAGE_SIZE = 10;
+
+// Public, read-only feed for the live writing post, one page per request (`?cursor=` for the
+// next). Firebase holds coordinate-free shapes; publicRunsPage loosens home routes before they
+// go out, so none can be matched to a map.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
     res.statusCode = 405;
@@ -18,11 +23,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const snapshot = await runsRef.once("value");
     const runsMap = (snapshot.val() ?? {}) as Record<string, StoredRun>;
-    const runs = publicRuns(Object.values(runsMap));
+    const cursor = typeof req.query.cursor === "string" ? req.query.cursor : null;
+    const page = publicRunsPage(Object.values(runsMap), { cursor, limit: PAGE_SIZE });
 
     res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=86400");
     res.statusCode = 200;
-    res.json({ runs });
+    res.json(page);
   } catch (error) {
     console.error("Error fetching runs.", error);
     res.statusCode = 500;

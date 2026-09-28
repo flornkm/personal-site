@@ -9,13 +9,14 @@ import {
   formatKm,
   type Metric,
   type Run,
-  runsQueryOptions,
+  runsInfiniteQueryOptions,
+  type RunsPage,
   trackLaps,
 } from "@/features/writing/lib/runs";
 import { cn } from "@/lib/utils";
 import { IconArrowRotateClockwise } from "central-icons/IconArrowRotateClockwise";
 import { IconChevronBottom } from "central-icons/IconChevronBottom";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "motion/react";
 import { useMemo, useRef, useState } from "react";
 
@@ -105,30 +106,36 @@ function StatSkeleton({ valueWidth }: { valueWidth: string }) {
   return <Skeleton className={cn("h-7", valueWidth)} />;
 }
 
+// One placeholder entry, mirroring a loaded RunItem's spacing and widths.
+function RunSkeletonItem() {
+  return (
+    <li>
+      <div className="relative mx-auto flex w-full max-w-[460px] items-start justify-between">
+        <div className="flex gap-6">
+          <span className={GUTTER}>
+            <StatSkeleton valueWidth="w-14" />
+          </span>
+          <StatSkeleton valueWidth="w-20" />
+        </div>
+        <Skeleton className="h-3.5 w-24" />
+      </div>
+      <div className="mx-auto mt-3 w-full max-w-[460px] space-y-1.5">
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-2/3" />
+      </div>
+      <Skeleton className="mt-5 h-[26rem] w-full rounded-none md:h-[34rem]" />
+    </li>
+  );
+}
+
 // Mirrors the loaded layout exactly: same root <div> (so prose's max-w rule doesn't cap the
 // full-width route cards), same spacing, same widths.
 function RunsSkeleton() {
   return (
     <div className="not-prose mx-auto mt-12 w-full md:max-w-[720px]">
       <ul className="flex flex-col gap-20">
-        {Array.from({ length: 2 }).map((_, index) => (
-          <li key={index}>
-            <div className="relative mx-auto flex w-full max-w-[460px] items-start justify-between">
-              <div className="flex gap-6">
-                <span className={GUTTER}>
-                  <StatSkeleton valueWidth="w-14" />
-                </span>
-                <StatSkeleton valueWidth="w-20" />
-              </div>
-              <Skeleton className="h-3.5 w-24" />
-            </div>
-            <div className="mx-auto mt-3 w-full max-w-[460px] space-y-1.5">
-              <Skeleton className="h-3.5 w-full" />
-              <Skeleton className="h-3.5 w-2/3" />
-            </div>
-            <Skeleton className="mt-5 h-[26rem] w-full rounded-none md:h-[34rem]" />
-          </li>
-        ))}
+        <RunSkeletonItem />
+        <RunSkeletonItem />
       </ul>
     </div>
   );
@@ -223,11 +230,29 @@ function RunItem({ run }: { run: Run }) {
   );
 }
 
+// Module-level so its identity is stable: React Query then only re-runs it when the pages
+// change, and the flattened list keeps its reference between renders.
+function flattenPages(data: InfiniteData<RunsPage>): Run[] {
+  return data.pages.flatMap((page) => page.runs);
+}
+
+// How far below the viewport the next page starts loading, so it's usually in before the
+// reader gets there. Each entry is ~40rem tall, so this is roughly one entry of lead.
+const PREFETCH_MARGIN = "0px 0px 800px 0px";
+
 export function RunsFeed() {
-  const { data: runs, isPending, isError } = useQuery(runsQueryOptions);
+  const {
+    data: runs,
+    isPending,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  } = useInfiniteQuery({ ...runsInfiniteQueryOptions, select: flattenPages });
 
   if (isPending) return <RunsSkeleton />;
-  if (isError) {
+  if (isError && !runs) {
     return (
       <Body2 className="not-prose text-tertiary">
         Runs are taking a breather. Check back soon.
@@ -238,6 +263,12 @@ export function RunsFeed() {
     return <Body2 className="not-prose text-tertiary">No runs synced yet.</Body2>;
   }
 
+  // fetchNextPage cancels and restarts an in-flight page by default, so ignore repeat triggers.
+  const loadMore = () => {
+    if (!isFetchingNextPage) void fetchNextPage();
+  };
+  const autoLoad = hasNextPage && !isFetchNextPageError;
+
   return (
     // Capped to the same "proud" width as the wider figure images (720px) so the route maps
     // don't balloon to the full article width on large screens; centred by the article's
@@ -247,7 +278,27 @@ export function RunsFeed() {
         {runs.map((run) => (
           <RunItem key={run.id} run={run} />
         ))}
+        {isFetchingNextPage && <RunSkeletonItem />}
       </ul>
+      {/* Pages in the next 10 runs as this sentinel nears the viewport: an intersection event
+          handler, no Effect. Keyed by the run count so it remounts after every page and checks
+          again, which covers a screen tall enough to still show it once the page lands. */}
+      {autoLoad && (
+        <motion.div
+          key={runs.length}
+          aria-hidden
+          className="h-px"
+          viewport={{ margin: PREFETCH_MARGIN }}
+          onViewportEnter={loadMore}
+        />
+      )}
+      {isFetchNextPageError && (
+        <div className="mt-12 flex justify-center">
+          <Button variant="tertiary" size="sm" onClick={loadMore}>
+            Load more runs
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

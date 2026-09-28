@@ -1,6 +1,6 @@
-import { createHmac } from "node:crypto";
+import { createHash } from "node:crypto";
 
-import { loosenPath } from "./_polyline.js";
+import { loosenPath, type RoutePath } from "./_polyline.js";
 import type { StoredRun } from "./_strava.js";
 
 // Countries where runs start near home, by ISO alpha-2 code (AE covers Dubai). Their routes
@@ -12,12 +12,13 @@ function isPrivate(run: StoredRun): boolean {
   return !!run.countryCode && PRIVATE_COUNTRY_CODES.has(run.countryCode);
 }
 
-// Seeds each run's rotation and mirror from a server secret. Deterministic per run, so every
-// response carries the same loosened shape: fresh randomness per request would let anyone
-// average many responses back towards the real route. Keyed, so the Strava id alone can't
-// reproduce it.
-function seededRandom(secret: string, runId: string): () => number {
-  const digest = createHmac("sha256", secret).update(runId).digest();
+// Seeds each run's rotation and mirror from a hash of its exact stored route. Deterministic,
+// so every response carries the same loosened shape: fresh randomness per request would let
+// anyone average many responses back towards the real route. And the exact route of a home
+// run never leaves the server, so nobody outside it can recompute the seed; it works as a
+// per-run secret without any env config.
+function seededRandom(run: StoredRun & { path: RoutePath }): () => number {
+  const digest = createHash("sha256").update(`${run.id}\n${run.path.d}`).digest();
   let offset = 0;
   return () => {
     const value = digest.readUInt32BE(offset);
@@ -44,17 +45,15 @@ function sliceSeries(
 }
 
 // A stored run as it may be served, or null when it must not be. Home routes are swapped for
-// their loosened shape (with the per-point series re-aligned to it); a home run that can't be
-// loosened, or any home run while the secret is missing, is withheld rather than sent raw.
+// their loosened shape (with the per-point series re-aligned to it); a home run too short to
+// loosen is withheld rather than sent raw.
 function toPublicRun(run: StoredRun): StoredRun | null {
   if (run.sportType === "VirtualRun") return null;
   // A route-less run is only shown when it's a known indoor run, drawn as track laps.
   if (run.path === null) return run.indoor === true ? run : null;
   if (!isPrivate(run)) return run;
 
-  const secret = process.env.ROUTE_PRIVACY_SECRET;
-  if (!secret) return null;
-  const loose = loosenPath(run.path, run.distanceMeters, seededRandom(secret, run.id));
+  const loose = loosenPath(run.path, run.distanceMeters, seededRandom({ ...run, path: run.path }));
   if (!loose) return null;
 
   const count = (loose.path.d.match(/[ML]/g) ?? []).length;

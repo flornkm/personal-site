@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 import { publicRuns } from "../../../../api/utils/_feed";
 import type { StoredRun } from "../../../../api/utils/_strava";
@@ -32,19 +32,8 @@ function run(overrides: Partial<StoredRun>): StoredRun {
   };
 }
 
-const ORIGINAL_SECRET = process.env.ROUTE_PRIVACY_SECRET;
-afterEach(() => {
-  process.env.ROUTE_PRIVACY_SECRET = ORIGINAL_SECRET;
-});
-
 describe("publicRuns", () => {
-  test("withholds home runs when the secret is missing", () => {
-    delete process.env.ROUTE_PRIVACY_SECRET;
-    expect(publicRuns([run({})])).toEqual([]);
-  });
-
   test("never serves a home route's real shape, and serves the same loosened one every time", () => {
-    process.env.ROUTE_PRIVACY_SECRET = "test-secret";
     const [first] = publicRuns([run({})]);
     const [second] = publicRuns([run({})]);
     expect(first.path?.d).not.toBe(LOOP_D);
@@ -54,12 +43,8 @@ describe("publicRuns", () => {
     expect(first.temperatures).toHaveLength(points);
   });
 
-  test("a different secret gives a different shape", () => {
-    process.env.ROUTE_PRIVACY_SECRET = "one";
-    const [a] = publicRuns([run({})]);
-    process.env.ROUTE_PRIVACY_SECRET = "two";
-    const [b] = publicRuns([run({})]);
-    expect(a.path?.d).not.toBe(b.path?.d);
+  test("withholds a home run too short to loosen", () => {
+    expect(publicRuns([run({ distanceMeters: 1000 })])).toEqual([]);
   });
 
   test("travel runs pass through untouched", () => {

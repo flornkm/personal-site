@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions } from "@tanstack/react-query";
 
 export type RoutePath = { d: string; w: number; h: number };
 
@@ -10,6 +10,8 @@ export type Run = {
   movingSeconds: number;
   elapsedSeconds: number;
   path: RoutePath | null;
+  // Treadmill run: path is always null, and the feed draws it as track laps instead.
+  indoor?: boolean;
   temperature: number | null;
   temperatures: number[] | null;
   averageHeartRate: number | null;
@@ -205,18 +207,97 @@ export function formatDate(iso: string): string {
   });
 }
 
-export async function fetchRuns(): Promise<Run[]> {
-  const res = await fetch("/api/runs");
-  if (!res.ok) throw new Error("Failed to load runs");
-  const data = (await res.json()) as { runs: Run[] };
-  return data.runs;
+// Standard 400 m track: two 84.39 m straights joined by 36.5 m radius bends.
+const TRACK_STRAIGHT = 84.39;
+const TRACK_RADIUS = 36.5;
+const POINTS_PER_LAP = 64;
+// How far the line moves inward per lap, and the most the laps may eat into the infield
+// before the spacing tightens to fit (a half marathon is 21 rings).
+const LANE_STEP = 3;
+const MAX_INSET = TRACK_RADIUS * 0.72;
+
+// A point `t` (0→1) of the way round one lap, counter-clockwise on screen from mid home straight
+// like a race. The lap runs in lane `from` and drifts to lane `to` (both radii) through the last
+// bend only, so every straight stays perfectly flat and consecutive laps join up exactly.
+function lapPoint(t: number, from: number, to: number): [number, number] {
+  const half = TRACK_STRAIGHT / 2;
+  const bend = Math.PI * TRACK_RADIUS;
+  let d = t * (2 * TRACK_STRAIGHT + 2 * bend);
+  if (d < half) return [d, from];
+  d -= half;
+  if (d < bend) {
+    const a = (d / bend) * Math.PI;
+    return [half + from * Math.sin(a), from * Math.cos(a)];
+  }
+  d -= bend;
+  if (d < TRACK_STRAIGHT) return [half - d, -from];
+  d -= TRACK_STRAIGHT;
+  if (d < bend) {
+    const f = d / bend;
+    const r = from + (to - from) * (0.5 - Math.cos(f * Math.PI) / 2);
+    return [-half - r * Math.sin(f * Math.PI), -r * Math.cos(f * Math.PI)];
+  }
+  d -= bend;
+  return [-half + d, to];
 }
 
-// Shared by the feed and the route loader's hover prefetch, so both read the same cache entry.
-// Fresh for as long as the API's own edge cache (s-maxage=300): a prefetch on hover must still
-// count as fresh when the page mounts a moment later, or the feed would fetch a second time.
-export const runsQueryOptions = queryOptions({
-  queryKey: ["runs"],
-  queryFn: fetchRuns,
+// An indoor run as track laps: one lap of the oval per kilometre, spiralling gently inward so
+// the laps read as separate rings, with the last lap cut where the run ended. Returns the path
+// plus the heart rate resampled onto it, since RouteCanvas colors segment i by series[i].
+export function trackLaps(
+  distanceMeters: number,
+  heartRates: number[] | null,
+): { path: RoutePath; heartRates: number[] | null } {
+  const laps = Math.max(distanceMeters / 1000, 0.05);
+  const step = Math.min(LANE_STEP, MAX_INSET / Math.max(1, Math.ceil(laps) - 1));
+  const count = Math.max(2, Math.ceil(laps * POINTS_PER_LAP) + 1);
+
+  const raw: [number, number][] = Array.from({ length: count }, (_, i) => {
+    const progress = (i / (count - 1)) * laps;
+    const lap = Math.min(Math.floor(progress), Math.ceil(laps) - 1);
+    return lapPoint(progress - lap, TRACK_RADIUS - step * lap, TRACK_RADIUS - step * (lap + 1));
+  });
+
+  const outer = TRACK_STRAIGHT / 2 + TRACK_RADIUS;
+  const scale = 100 / (outer * 2);
+  const d = raw
+    .map(([x, y], i) => {
+      // Two decimals: the box renders ~7x larger than its 100 units, so 0.1 steps would show.
+      const px = ((x + outer) * scale).toFixed(2);
+      const py = ((y + TRACK_RADIUS) * scale).toFixed(2);
+      return `${i === 0 ? "M" : "L"}${px} ${py}`;
+    })
+    .join(" ");
+
+  return {
+    path: { d, w: 100, h: +(TRACK_RADIUS * 2 * scale).toFixed(1) },
+    heartRates:
+      heartRates && heartRates.length
+        ? Array.from(
+            { length: count },
+            (_, i) => heartRates[Math.round((i / (count - 1)) * (heartRates.length - 1))],
+          )
+        : null,
+  };
+}
+
+export type RunsPage = { runs: Run[]; nextCursor: string | null };
+
+async function fetchRunsPage(cursor: string | null, signal: AbortSignal): Promise<RunsPage> {
+  const url = cursor ? `/api/runs?cursor=${encodeURIComponent(cursor)}` : "/api/runs";
+  const res = await fetch(url, { signal });
+  if (!res.ok) throw new Error("Failed to load runs");
+  return (await res.json()) as RunsPage;
+}
+
+// Shared by the feed and the route loader's hover prefetch, so both read the same cache entry
+// (the prefetch fills the first page only). Fresh for as long as the API's own edge cache
+// (s-maxage=300): a prefetch on hover must still count as fresh when the page mounts a moment
+// later, or the feed would fetch a second time.
+export const runsInfiniteQueryOptions = infiniteQueryOptions({
+  queryKey: ["runs", "pages"],
+  queryFn: ({ pageParam, signal }) => fetchRunsPage(pageParam, signal),
+  initialPageParam: null as string | null,
+  getNextPageParam: (lastPage) => lastPage.nextCursor,
   staleTime: 5 * 60 * 1000,
 });

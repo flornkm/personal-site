@@ -77,16 +77,16 @@ function StartMarker({ fill }: { fill: string }) {
 // Wraps an endpoint glyph in the site's Base UI tooltip, anchored to the SVG marker group. Going
 // through Base UI (rather than a hand-drawn SVG label) gives us the shared hover delay, a popup
 // portaled to the body so it's never clipped by the route box and always on top, and collision-
-// aware placement that flips/shifts near the edges. `offset` places the marker beside the route
-// point (negative = left of start, positive = right of finish). The transparent hit rect enlarges
+// aware placement that flips/shifts near the edges. `direction` is the unit vector the marker sits
+// out along from its route point, MARKER_OFFSET px away. The transparent hit rect enlarges
 // the target; stroke="none" keeps it from inheriting the svg's currentColor stroke as a border.
 function EndpointMarker({
   label,
-  offset,
+  direction,
   children,
 }: {
   label: string;
-  offset: number;
+  direction: [number, number];
   children: ReactNode;
 }) {
   const hit = PLATE / 2 + 3;
@@ -98,7 +98,7 @@ function EndpointMarker({
           return (
             <g
               {...props}
-              transform={`translate(${offset} 0)`}
+              transform={`translate(${direction[0] * MARKER_OFFSET} ${direction[1] * MARKER_OFFSET})`}
               className={cn("cursor-default", props.className)}
             >
               <rect
@@ -211,7 +211,6 @@ function FinishConfetti({ color }: { color: string }) {
 // scale is ~3px per unit, so 6 units is only ~19px against a plate that reaches 23px, and every
 // endpoint sitting on the bounding box edge — which is most of them — got clipped in half.
 const PLATE_HALF = PLATE / 2 + 1; // half the plate plus the outer half of its 1.4 stroke
-const MARKER_REACH = MARKER_OFFSET + PLATE_HALF;
 // Slack for the marks that ride the line itself: the tip dot (8px square, centered) and the stroke.
 const LINE_SLACK = 5;
 
@@ -240,20 +239,40 @@ const CONFETTI_SPREAD = CONFETTI.reduce(
   { left: 0, right: 0, up: 0 },
 );
 
-// Start plate hangs left of its point, finish plate right — and the burst fans up and out from
-// the finish plate's top edge, which is what makes the finish's claim the larger one.
-const START_INSETS: Insets = {
-  left: MARKER_REACH,
-  right: 0,
-  top: PLATE_HALF,
-  bottom: PLATE_HALF,
-};
-const FINISH_INSETS: Insets = {
-  left: Math.max(0, CONFETTI_SPREAD.left - MARKER_OFFSET),
-  right: Math.max(MARKER_REACH, MARKER_OFFSET + CONFETTI_SPREAD.right),
-  top: Math.max(PLATE_HALF, PLATE / 2 + CONFETTI_SPREAD.up),
-  bottom: PLATE_HALF,
-};
+type Vec = [number, number];
+
+// Unit direction an endpoint plate hangs in: straight on past the finish, straight back before the
+// start, i.e. into space the line never covers. Measured over the last couple of units rather
+// than one segment, so GPS jitter at the very end can't swing it. Always-right (the old rule)
+// parked the flag on top of the line whenever a run finished heading left or round a bend.
+function markerDirection(points: Vec[], fromEnd: boolean, fallback: Vec): Vec {
+  const n = points.length;
+  if (n < 2) return fallback;
+  const origin = fromEnd ? points[n - 1] : points[0];
+  for (let i = 1; i < n; i++) {
+    const [x, y] = fromEnd ? points[n - 1 - i] : points[i];
+    const dx = origin[0] - x;
+    const dy = origin[1] - y;
+    const length = Math.hypot(dx, dy);
+    if (length >= 2) return [dx / length, dy / length];
+  }
+  return fallback;
+}
+
+// Room a plate `MARKER_OFFSET` px out along `dir` claims around its route point, plus any extra
+// reach above it (the finish burst).
+function plateInsets([ux, uy]: Vec, extra: { up: number; left: number; right: number }): Insets {
+  const cx = ux * MARKER_OFFSET;
+  const cy = uy * MARKER_OFFSET;
+  return {
+    left: Math.max(0, PLATE_HALF - cx, extra.left - cx),
+    right: Math.max(0, PLATE_HALF + cx, extra.right + cx),
+    top: Math.max(0, PLATE_HALF - cy, PLATE / 2 + extra.up - cy),
+    bottom: Math.max(0, PLATE_HALF + cy),
+  };
+}
+
+const NO_EXTRA = { up: 0, left: 0, right: 0 };
 
 // The box + animated route line, shared by the /writing/runs feed and the /runs-post view.
 // Overlays (metric switch, legend) come in as absolutely-positioned children so each caller
@@ -336,6 +355,9 @@ export function RouteCanvas({
 
   // Before the first measurement (and if ResizeObserver is missing entirely) fall back to the
   // uniform viewBox-unit padding — same drawing as before, just without the guarantee.
+  const startDir = useMemo(() => markerDirection(geom.points, false, [-1, 0]), [geom]);
+  const endDir = useMemo(() => markerDirection(geom.points, true, [1, 0]), [geom]);
+
   const fit = useMemo(() => {
     const start = geom.points[0];
     const end = geom.points[geom.points.length - 1];
@@ -345,8 +367,8 @@ export function RouteCanvas({
         box.w,
         box.h,
         [
-          { at: start, insets: START_INSETS },
-          { at: end, insets: FINISH_INSETS },
+          { at: start, insets: plateInsets(startDir, NO_EXTRA) },
+          { at: end, insets: plateInsets(endDir, CONFETTI_SPREAD) },
         ],
         {
           left: LINE_SLACK,
@@ -361,7 +383,7 @@ export function RouteCanvas({
       scale: 5,
       viewBox: `${origin} ${origin} ${path.w + ROUTE_PADDING * 2} ${path.h + ROUTE_PADDING * 2}`,
     };
-  }, [box, path, geom, bottomChrome]);
+  }, [box, path, geom, bottomChrome, startDir, endDir]);
   const { scale, viewBox } = fit;
 
   // Draw by growing each segment's own `d` on a plain requestAnimationFrame loop. Only geometry
@@ -460,19 +482,21 @@ export function RouteCanvas({
         </g>
         {startPoint && (
           <g transform={`translate(${startPoint[0]} ${startPoint[1]}) scale(${1 / scale})`}>
-            <EndpointMarker label="Start" offset={-MARKER_OFFSET}>
+            <EndpointMarker label="Start" direction={startDir}>
               <StartMarker fill={startColor} />
             </EndpointMarker>
           </g>
         )}
         {endPoint && done && (
           <g transform={`translate(${endPoint[0]} ${endPoint[1]}) scale(${1 / scale})`}>
-            <EndpointMarker label="Finish" offset={MARKER_OFFSET}>
+            <EndpointMarker label="Finish" direction={endDir}>
               <FinishMarker fill={endColor} />
             </EndpointMarker>
             {!reduceMotion && (
               // Burst origin: the top edge of the finish plate.
-              <g transform={`translate(${MARKER_OFFSET} ${-PLATE / 2})`}>
+              <g
+                transform={`translate(${endDir[0] * MARKER_OFFSET} ${endDir[1] * MARKER_OFFSET - PLATE / 2})`}
+              >
                 <FinishConfetti color={endColor} />
               </g>
             )}

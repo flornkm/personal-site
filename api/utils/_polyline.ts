@@ -67,3 +67,102 @@ export function toNormalizedPath(points: [number, number][]): RoutePath | null {
 
   return { d, w: +(spanX * scale).toFixed(1), h };
 }
+
+const EDGE_TRIM_METERS = 500;
+const STYLIZE_STEP_METERS = 150;
+const SMOOTHING_PASSES = 3;
+export const MIN_STYLIZE_METERS = EDGE_TRIM_METERS * 2 + STYLIZE_STEP_METERS * 2;
+
+function parsePoints(d: string): [number, number][] {
+  const nums = (d.match(/-?\d*\.?\d+/g) ?? []).map(Number);
+  const points: [number, number][] = [];
+  for (let i = 0; i + 1 < nums.length; i += 2) points.push([nums[i], nums[i + 1]]);
+  return points;
+}
+
+function pointAt(points: [number, number][], cum: number[], target: number): [number, number] {
+  let i = 1;
+  while (i < cum.length - 1 && cum[i] < target) i++;
+  const t = (target - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
+  const [ax, ay] = points[i - 1];
+  const [bx, by] = points[i];
+  return [ax + (bx - ax) * t, ay + (by - ay) * t];
+}
+
+function chaikin(points: [number, number][]): [number, number][] {
+  const out: [number, number][] = [points[0]];
+  for (let i = 0; i < points.length - 1; i++) {
+    const [x0, y0] = points[i];
+    const [x1, y1] = points[i + 1];
+    out.push([0.75 * x0 + 0.25 * x1, 0.75 * y0 + 0.25 * y1]);
+    out.push([0.25 * x0 + 0.75 * x1, 0.25 * y0 + 0.75 * y1]);
+  }
+  out.push(points[points.length - 1]);
+  return out;
+}
+
+export type StylizedPath = {
+  path: RoutePath;
+  // Fraction of the original route (by length) this one covers, for slicing the per-point
+  // series so they stay aligned with the line.
+  from: number;
+  to: number;
+};
+
+export function stylizePath(
+  path: RoutePath,
+  distanceMeters: number,
+  random: () => number,
+): StylizedPath | null {
+  const points = parsePoints(path.d);
+  if (points.length < 2) return null;
+
+  const cum = [0];
+  for (let i = 1; i < points.length; i++) {
+    const [ax, ay] = points[i - 1];
+    const [bx, by] = points[i];
+    cum.push(cum[i - 1] + Math.hypot(bx - ax, by - ay));
+  }
+  const total = cum[cum.length - 1];
+  if (total <= 0 || distanceMeters <= 0) return null;
+
+  const unitsPerMeter = total / distanceMeters;
+  const start = EDGE_TRIM_METERS * unitsPerMeter;
+  const end = total - start;
+  const step = STYLIZE_STEP_METERS * unitsPerMeter;
+  if (end - start < step * 2) return null;
+
+  let styled: [number, number][] = [];
+  for (let at = start; at < end; at += step) styled.push(pointAt(points, cum, at));
+  styled.push(pointAt(points, cum, end));
+  for (let pass = 0; pass < SMOOTHING_PASSES; pass++) styled = chaikin(styled);
+
+  const angle = random() * Math.PI * 2;
+  const mirror = random() < 0.5 ? -1 : 1;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const turned = styled.map(([x, y]): [number, number] => [
+    mirror * (x * cos - y * sin),
+    x * sin + y * cos,
+  ]);
+
+  const minX = Math.min(...turned.map(([x]) => x));
+  const minY = Math.min(...turned.map(([, y]) => y));
+  const spanX = Math.max(...turned.map(([x]) => x)) - minX || 1;
+  const spanY = Math.max(...turned.map(([, y]) => y)) - minY || 1;
+  const scale = VIEWBOX_SIZE / Math.max(spanX, spanY);
+
+  const d = turned
+    .map(([x, y], i) => {
+      const px = ((x - minX) * scale).toFixed(1);
+      const py = ((y - minY) * scale).toFixed(1);
+      return `${i === 0 ? "M" : "L"}${px} ${py}`;
+    })
+    .join(" ");
+
+  return {
+    path: { d, w: +(spanX * scale).toFixed(1), h: +(spanY * scale).toFixed(1) },
+    from: start / total,
+    to: end / total,
+  };
+}

@@ -15,6 +15,7 @@ Rules:
 export type RunFacts = {
   startDate: string;
   sportType: string;
+  indoor: boolean;
   distanceMeters: number;
   movingSeconds: number;
   averageHeartRate: number | null;
@@ -44,13 +45,17 @@ export async function generateRunDescription(
   const facts = [
     `date: ${run.startDate.slice(0, 10)}`,
     `start time (local): ${run.startDate.slice(11, 16)}`,
-    `type: ${run.sportType}`,
+    `type: ${run.indoor ? "treadmill run (indoors)" : run.sportType}`,
     `distance: ${(run.distanceMeters / 1000).toFixed(1)} km`,
     `moving time: ${Math.round(run.movingSeconds / 60)} min`,
     `pace: ${paceMinPerKm(run.distanceMeters, run.movingSeconds) ?? "unknown"}`,
     `average heart rate: ${run.averageHeartRate == null ? "not recorded" : `${Math.round(run.averageHeartRate)} bpm`}`,
-    `temperature at start: ${run.temperature == null ? "unknown" : `${Math.round(run.temperature)}°C`}`,
-  ].join("\n");
+    run.indoor
+      ? null
+      : `temperature at start: ${run.temperature == null ? "unknown" : `${Math.round(run.temperature)}°C`}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const variety = recentNotes.length
     ? `\n\nNotes from the previous runs, newest first. Write this one with a clearly different opening and structure, and don't reuse their phrases:\n${recentNotes

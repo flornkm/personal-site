@@ -10,13 +10,14 @@ import {
   type Metric,
   type Run,
   runsQueryOptions,
+  trackLaps,
 } from "@/features/writing/lib/runs";
 import { cn } from "@/lib/utils";
 import { IconArrowRotateClockwise } from "central-icons/IconArrowRotateClockwise";
 import { IconChevronBottom } from "central-icons/IconChevronBottom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "motion/react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 function Stat({ value, unit }: { value: string; unit: string }) {
   return (
@@ -46,7 +47,10 @@ function RunStats({ run }: { run: Run }) {
         </span>
         <Stat value={duration.value} unit={duration.unit} />
       </div>
-      <span className="text-sm text-tertiary">{formatDate(run.startDate)}</span>
+      <span className="text-sm text-tertiary">
+        {formatDate(run.startDate)}
+        {run.indoor && " · Indoors"}
+      </span>
     </div>
   );
 }
@@ -140,10 +144,16 @@ function RunsSkeleton() {
 const CHROME_HEIGHT = 28 + 8;
 
 // Each entry carries its own metric toggle, so one run can show temperature while the
-// next shows heart rate.
+// next shows heart rate. Indoor runs have no weather, so they open on heart rate.
 function RunItem({ run }: { run: Run }) {
   const reduceMotion = useReducedMotion();
-  const [metric, setMetric] = useState<Metric>("temperature");
+  const [metric, setMetric] = useState<Metric>(run.indoor ? "heartrate" : "temperature");
+  // Memoized so RouteCanvas keeps its parsed geometry (keyed on path identity) across renders.
+  const drawing = useMemo(() => {
+    if (run.path) return { path: run.path, heartRates: run.heartRates };
+    if (run.indoor) return trackLaps(run.distanceMeters, run.heartRates);
+    return null;
+  }, [run]);
   const [replayToken, setReplayToken] = useState(0);
   return (
     <li>
@@ -159,14 +169,14 @@ function RunItem({ run }: { run: Run }) {
           {run.description}
         </p>
       )}
-      {run.path && (
+      {drawing && (
         <RouteCanvas
-          path={run.path}
+          path={drawing.path}
           metric={metric}
           temperature={run.temperature}
           temperatures={run.temperatures}
           averageHeartRate={run.averageHeartRate}
-          heartRates={run.heartRates}
+          heartRates={drawing.heartRates}
           replayToken={replayToken}
           bottomChrome={CHROME_HEIGHT}
           className="mt-5 h-[26rem] w-full bg-secondary p-3 md:h-[34rem] md:p-5"

@@ -10,6 +10,8 @@ export type Run = {
   movingSeconds: number;
   elapsedSeconds: number;
   path: RoutePath | null;
+  // Treadmill run: path is always null, and the feed draws it as track laps instead.
+  indoor?: boolean;
   temperature: number | null;
   temperatures: number[] | null;
   averageHeartRate: number | null;
@@ -203,6 +205,76 @@ export function formatDate(iso: string): string {
     year: "numeric",
     timeZone: "UTC",
   });
+}
+
+// Standard 400 m track: two 84.39 m straights joined by 36.5 m radius bends.
+const TRACK_STRAIGHT = 84.39;
+const TRACK_RADIUS = 36.5;
+const POINTS_PER_LAP = 64;
+// How far the line moves inward per lap, and the most the laps may eat into the infield
+// before the spacing tightens to fit (a half marathon is 21 rings).
+const LANE_STEP = 3;
+const MAX_INSET = TRACK_RADIUS * 0.72;
+
+function stadiumPoint(t: number, radius: number): [number, number] {
+  const half = TRACK_STRAIGHT / 2;
+  const bend = Math.PI * radius;
+  let d = t * (2 * TRACK_STRAIGHT + 2 * bend);
+  // Counter-clockwise on screen, starting mid home straight like a race.
+  if (d < half) return [d, radius];
+  d -= half;
+  if (d < bend) {
+    const a = d / radius;
+    return [half + radius * Math.sin(a), radius * Math.cos(a)];
+  }
+  d -= bend;
+  if (d < TRACK_STRAIGHT) return [half - d, -radius];
+  d -= TRACK_STRAIGHT;
+  if (d < bend) {
+    const a = d / radius;
+    return [-half - radius * Math.sin(a), -radius * Math.cos(a)];
+  }
+  d -= bend;
+  return [-half + d, radius];
+}
+
+// An indoor run as track laps: one lap of the oval per kilometre, spiralling gently inward so
+// the laps read as separate rings, with the last lap cut where the run ended. Returns the path
+// plus the heart rate resampled onto it, since RouteCanvas colors segment i by series[i].
+export function trackLaps(
+  distanceMeters: number,
+  heartRates: number[] | null,
+): { path: RoutePath; heartRates: number[] | null } {
+  const laps = Math.max(distanceMeters / 1000, 0.05);
+  const step = Math.min(LANE_STEP, MAX_INSET / Math.max(1, Math.ceil(laps) - 1));
+  const count = Math.max(2, Math.ceil(laps * POINTS_PER_LAP) + 1);
+
+  const raw: [number, number][] = Array.from({ length: count }, (_, i) => {
+    const progress = (i / (count - 1)) * laps;
+    // The oval closes on itself, so t = 0 of one lap is exactly t = 1 of the previous.
+    return stadiumPoint(progress % 1, TRACK_RADIUS - step * progress);
+  });
+
+  const outer = TRACK_STRAIGHT / 2 + TRACK_RADIUS;
+  const scale = 100 / (outer * 2);
+  const d = raw
+    .map(([x, y], i) => {
+      const px = ((x + outer) * scale).toFixed(1);
+      const py = ((y + TRACK_RADIUS) * scale).toFixed(1);
+      return `${i === 0 ? "M" : "L"}${px} ${py}`;
+    })
+    .join(" ");
+
+  return {
+    path: { d, w: 100, h: +(TRACK_RADIUS * 2 * scale).toFixed(1) },
+    heartRates:
+      heartRates && heartRates.length
+        ? Array.from(
+            { length: count },
+            (_, i) => heartRates[Math.round((i / (count - 1)) * (heartRates.length - 1))],
+          )
+        : null,
+  };
 }
 
 export async function fetchRuns(): Promise<Run[]> {

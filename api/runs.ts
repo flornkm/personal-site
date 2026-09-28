@@ -1,13 +1,13 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-import { isPublicRun } from "./utils/_feed.js";
+import { publicRuns } from "./utils/_feed.js";
 import { db } from "./utils/_firebase.js";
 import type { StoredRun } from "./utils/_strava.js";
 
 const runsRef = db.ref("runs");
 
-// Public, read-only feed for the live writing post. Only location-safe, pre-normalized
-// data lives in Firebase, so nothing here can leak a location.
+// Public, read-only feed for the live writing post. Firebase holds coordinate-free shapes;
+// publicRuns loosens home routes before they go out, so none can be matched to a map.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
     res.statusCode = 405;
@@ -18,9 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const snapshot = await runsRef.once("value");
     const runsMap = (snapshot.val() ?? {}) as Record<string, StoredRun>;
-    const runs = Object.values(runsMap)
-      .filter(isPublicRun)
-      .sort((a, b) => b.startDate.localeCompare(a.startDate));
+    const runs = publicRuns(Object.values(runsMap));
 
     res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=86400");
     res.statusCode = 200;

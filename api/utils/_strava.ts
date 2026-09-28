@@ -11,13 +11,12 @@ const STRAVA_ACTIVITY_URL = "https://www.strava.com/api/v3/activities";
 // Only ever sync runs from this date onward (the live post starts in May 2026).
 const SYNC_AFTER_EPOCH = Math.floor(Date.UTC(2026, 4, 1) / 1000); // 2026-05-01
 
-// Outdoor runs only — VirtualRun (Zwift etc.) is deliberately excluded, and trainer
-// covers treadmill runs that Strava still files under plain "Run".
+// VirtualRun (Zwift etc.) is deliberately excluded. Treadmill runs come through as plain "Run"
+// with `trainer` set and no GPS; they're kept and drawn as track laps.
 const RUN_TYPES = new Set(["Run", "TrailRun"]);
 
-function isOutdoorRun(activity: StravaActivity): boolean {
-  return RUN_TYPES.has(activity.sport_type) && !activity.trainer;
-}
+// Samples an indoor run's heart rate is resampled to, since it has no polyline to align with.
+const INDOOR_SAMPLES = 240;
 
 export type { RoutePath };
 
@@ -45,6 +44,9 @@ export type StoredRun = {
   movingSeconds: number;
   elapsedSeconds: number;
   path: RoutePath | null;
+  // Treadmill run (Strava `trainer`, or no GPS track). Always has a null path; the feed draws
+  // it as track laps from the distance instead.
+  indoor: boolean;
   // Ambient °C at the start (Open-Meteo) — the per-run readout.
   temperature: number | null;
   // Per-point °C interpolated across the run's duration from the day's hourly curve, so the
@@ -159,7 +161,10 @@ async function toStoredRun(
   // The per-point series arrived after the scalar, so an old run can have temperature but
   // not temperatures — refetch unless both are present (a route-less run can never gain one).
   const hasFullTemps = priorTemp != null && (priorTemps != null || points.length === 0);
-  const hasStart = start != null && start.length === 2;
+  const indoor = !!activity.trainer || points.length === 0;
+  // Indoor runs skip weather and geocoding: a treadmill's GPS fix (when a watch records one)
+  // is the gym, not the run, and the room's temperature isn't the weather.
+  const hasStart = !indoor && start != null && start.length === 2;
 
   const [temps, hrStream, geo] = await Promise.all([
     hasFullTemps || !hasStart
@@ -183,11 +188,13 @@ async function toStoredRun(
     distanceMeters: activity.distance,
     movingSeconds: activity.moving_time,
     elapsedSeconds: activity.elapsed_time,
-    path: points.length ? toNormalizedPath(points) : null,
+    path: indoor ? null : toNormalizedPath(points),
+    indoor,
     temperature: temps.start,
     temperatures: temps.perPoint,
     averageHeartRate: activity.average_heartrate ?? null,
-    heartRates: priorHr ?? (hrStream && points.length ? resample(hrStream, points.length) : null),
+    heartRates:
+      priorHr ?? (hrStream ? resample(hrStream, indoor ? INDOOR_SAMPLES : points.length) : null),
     country: geo.country,
     countryCode: geo.countryCode,
     description,
@@ -197,11 +204,11 @@ async function toStoredRun(
 
 // Re-syncs the whole window every call and replaces the stored set wholesale, so a
 // missed trigger self-heals on the next run or the daily cron — and runs that no longer
-// qualify (e.g. indoor runs synced before the filter existed) get deleted, not orphaned.
+// qualify (e.g. a run later retyped on Strava) get deleted, not orphaned.
 export async function syncRuns(): Promise<{ synced: number; total: number }> {
   const accessToken = await getAccessToken();
   const activities = await fetchActivities(accessToken);
-  const runs = activities.filter(isOutdoorRun);
+  const runs = activities.filter((activity) => RUN_TYPES.has(activity.sport_type));
 
   // Existing runs carry already-fetched temp/HR so toStoredRun can skip re-fetching them.
   const existingSnap = await db.ref("runs").once("value");
@@ -231,6 +238,7 @@ export async function syncRuns(): Promise<{ synced: number; total: number }> {
       {
         startDate: run.startDate,
         sportType: run.sportType,
+        indoor: run.indoor,
         distanceMeters: run.distanceMeters,
         movingSeconds: run.movingSeconds,
         averageHeartRate: run.averageHeartRate,

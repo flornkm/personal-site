@@ -47,10 +47,7 @@ function RunStats({ run }: { run: Run }) {
         </span>
         <Stat value={duration.value} unit={duration.unit} />
       </div>
-      <span className="text-sm text-tertiary">
-        {formatDate(run.startDate)}
-        {run.indoor && " · Indoors"}
-      </span>
+      <span className="text-sm text-tertiary">{formatDate(run.startDate)}</span>
     </div>
   );
 }
@@ -143,11 +140,19 @@ function RunsSkeleton() {
 // on the other side is shorter, so one band covers both.
 const CHROME_HEIGHT = 28 + 8;
 
+function hasMetric(run: Run, metric: Metric): boolean {
+  if (metric === "temperature") return run.temperature != null || !!run.temperatures?.length;
+  return run.averageHeartRate != null || !!run.heartRates?.length;
+}
+
 // Each entry carries its own metric toggle, so one run can show temperature while the
-// next shows heart rate. Indoor runs have no weather, so they open on heart rate.
+// next shows heart rate. The toggle only appears when the run has both; with one, that one is
+// shown, and with neither (e.g. a hand-entered treadmill run) the legend goes too.
 function RunItem({ run }: { run: Run }) {
   const reduceMotion = useReducedMotion();
-  const [metric, setMetric] = useState<Metric>(run.indoor ? "heartrate" : "temperature");
+  const metrics = (["temperature", "heartrate"] as const).filter((m) => hasMetric(run, m));
+  const [chosen, setMetric] = useState<Metric>("temperature");
+  const metric = metrics.includes(chosen) ? chosen : (metrics[0] ?? chosen);
   // Memoized so RouteCanvas keeps its parsed geometry (keyed on path identity) across renders.
   const drawing = useMemo(() => {
     if (run.path) return { path: run.path, heartRates: run.heartRates };
@@ -183,7 +188,7 @@ function RunItem({ run }: { run: Run }) {
         >
           {/* Map-style controls in the box corners: toggle + replay left, color key right. */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2 md:bottom-5 md:left-5">
-            <MetricSwitch metric={metric} onChange={setMetric} />
+            {metrics.length > 1 && <MetricSwitch metric={metric} onChange={setMetric} />}
             {/* flex: the trigger div is otherwise a block wrapper whose inline-flex child leaves
                 baseline space below, knocking the button out of line with the select. */}
             <Tooltip content="Replay" className="flex">
@@ -207,9 +212,11 @@ function RunItem({ run }: { run: Run }) {
               </Button>
             </Tooltip>
           </div>
-          <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5">
-            <ColorLegend metric={metric} />
-          </div>
+          {metrics.length > 0 && (
+            <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5">
+              <ColorLegend metric={metric} />
+            </div>
+          )}
         </RouteCanvas>
       )}
     </li>

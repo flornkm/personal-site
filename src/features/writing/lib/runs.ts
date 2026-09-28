@@ -216,26 +216,29 @@ const POINTS_PER_LAP = 64;
 const LANE_STEP = 3;
 const MAX_INSET = TRACK_RADIUS * 0.72;
 
-function stadiumPoint(t: number, radius: number): [number, number] {
+// A point `t` (0→1) of the way round one lap, counter-clockwise on screen from mid home straight
+// like a race. The lap runs in lane `from` and drifts to lane `to` (both radii) through the last
+// bend only, so every straight stays perfectly flat and consecutive laps join up exactly.
+function lapPoint(t: number, from: number, to: number): [number, number] {
   const half = TRACK_STRAIGHT / 2;
-  const bend = Math.PI * radius;
+  const bend = Math.PI * TRACK_RADIUS;
   let d = t * (2 * TRACK_STRAIGHT + 2 * bend);
-  // Counter-clockwise on screen, starting mid home straight like a race.
-  if (d < half) return [d, radius];
+  if (d < half) return [d, from];
   d -= half;
   if (d < bend) {
-    const a = d / radius;
-    return [half + radius * Math.sin(a), radius * Math.cos(a)];
+    const a = (d / bend) * Math.PI;
+    return [half + from * Math.sin(a), from * Math.cos(a)];
   }
   d -= bend;
-  if (d < TRACK_STRAIGHT) return [half - d, -radius];
+  if (d < TRACK_STRAIGHT) return [half - d, -from];
   d -= TRACK_STRAIGHT;
   if (d < bend) {
-    const a = d / radius;
-    return [-half - radius * Math.sin(a), -radius * Math.cos(a)];
+    const f = d / bend;
+    const r = from + (to - from) * (0.5 - Math.cos(f * Math.PI) / 2);
+    return [-half - r * Math.sin(f * Math.PI), -r * Math.cos(f * Math.PI)];
   }
   d -= bend;
-  return [-half + d, radius];
+  return [-half + d, to];
 }
 
 // An indoor run as track laps: one lap of the oval per kilometre, spiralling gently inward so
@@ -251,16 +254,17 @@ export function trackLaps(
 
   const raw: [number, number][] = Array.from({ length: count }, (_, i) => {
     const progress = (i / (count - 1)) * laps;
-    // The oval closes on itself, so t = 0 of one lap is exactly t = 1 of the previous.
-    return stadiumPoint(progress % 1, TRACK_RADIUS - step * progress);
+    const lap = Math.min(Math.floor(progress), Math.ceil(laps) - 1);
+    return lapPoint(progress - lap, TRACK_RADIUS - step * lap, TRACK_RADIUS - step * (lap + 1));
   });
 
   const outer = TRACK_STRAIGHT / 2 + TRACK_RADIUS;
   const scale = 100 / (outer * 2);
   const d = raw
     .map(([x, y], i) => {
-      const px = ((x + outer) * scale).toFixed(1);
-      const py = ((y + TRACK_RADIUS) * scale).toFixed(1);
+      // Two decimals: the box renders ~7x larger than its 100 units, so 0.1 steps would show.
+      const px = ((x + outer) * scale).toFixed(2);
+      const py = ((y + TRACK_RADIUS) * scale).toFixed(2);
       return `${i === 0 ? "M" : "L"}${px} ${py}`;
     })
     .join(" ");

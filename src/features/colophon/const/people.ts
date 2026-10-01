@@ -1,5 +1,4 @@
 export const PEOPLE: { name: string; href: string }[] = [
-  { name: "Chris Zachary", href: "https://itstheonlychris.com/" },
   { name: "Eduard Wieandt", href: "https://x.com/eduardwieandt" },
   { name: "Nils Eller", href: "https://www.nilseller.com/" },
   { name: "Anton Stallboerger", href: "https://antonstallboerger.com/" },

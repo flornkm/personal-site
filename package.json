@@ -1,8 +1,5 @@
 {
   "type": "module",
-  "engines": {
-    "node": "24.x"
-  },
   "scripts": {
     "dev": "vite dev",
     "preview": "vercel dev",
@@ -84,5 +81,8 @@
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2",
     "vite": "^8.0.0"
+  },
+  "engines": {
+    "node": "24.x"
   }
 }

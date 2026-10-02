@@ -32,11 +32,10 @@ export function SlopNinja() {
   return (
     <div className="relative size-full overflow-hidden select-none">
       {/* In the mobile sheet the top 80px is the drawer's swipe-to-dismiss strip; a downward
-          slash started there would close the game, so the play field starts below it, behind a
-          hairline that marks the boundary. */}
+          slash started there would close the game, so the play field starts below it. */}
       <div
         ref={hostRef}
-        className="absolute inset-0 overflow-hidden in-[.experiment-drawer\_\_content]:top-20 in-[.experiment-drawer\_\_content]:border-t in-[.experiment-drawer\_\_content]:border-black/5 dark:in-[.experiment-drawer\_\_content]:border-white/10"
+        className="absolute inset-0 overflow-hidden in-[.experiment-drawer\_\_content]:top-20"
       />
       {problem && (
         <p className="pointer-events-none absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-neutral-500 dark:text-neutral-400">

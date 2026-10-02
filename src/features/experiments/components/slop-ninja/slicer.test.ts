@@ -5,6 +5,10 @@ import { bevelBox, bevelCylinder, lathe, loft, mergeShells, placed, transformed 
 import { CAP, propGeometry } from "./items";
 import { sliceGeometry } from "./slicer";
 
+// Per-cut time budget in ms (several cuts must fit in a frame). Shared CI runners run these
+// benchmarks ~2.5x slower than a laptop, so they get headroom there instead of flaking.
+const SLICE_BUDGET_MS = process.env.CI ? 1 : 0.5;
+
 type Point = [number, number];
 
 function ringArea(ring: Point[]) {
@@ -740,7 +744,7 @@ describe("sliceGeometry", () => {
     console.log(
       `slice ${triangles} tris: ${(best * 1000).toFixed(1)} µs best, ${(median * 1000).toFixed(1)} µs median`,
     );
-    expect(best).toBeLessThan(0.5);
+    expect(best).toBeLessThan(SLICE_BUDGET_MS);
   });
 });
 
@@ -951,7 +955,7 @@ describe("sliceGeometry under adversarial cuts", () => {
         }
       }
     }
-  });
+  }, 60_000);
 
   test("planes containing a side wall, a face, or the float32 corners of one stay closed", () => {
     let planes = 0;
@@ -1007,7 +1011,7 @@ describe("sliceGeometry under adversarial cuts", () => {
         }
       }
     });
-  });
+  }, 60_000);
 
   test("re-slicing pieces again and again stays closed", () => {
     adversarialShapes.forEach(([name, make], s) => {
@@ -1159,7 +1163,7 @@ describe("sliceGeometry under adversarial cuts", () => {
         }
       }
     }
-  });
+  }, 60_000);
 
   test("overflowing every scratch buffer on a dense mesh, then slicing a small one", () => {
     const dense = holedSlab(circle(1, 400), [circle(0.5, 300)], 0.1);
@@ -1210,7 +1214,7 @@ describe("sliceGeometry under adversarial cuts", () => {
     console.log(
       `slice 24-seg ring (${geometry.getAttribute("position").count / 3} tris) x1000: ${runs[0].toFixed(4)} ms/op best, ${runs[1].toFixed(4)} ms/op median`,
     );
-    expect(runs[0]).toBeLessThan(0.5);
+    expect(runs[0]).toBeLessThan(SLICE_BUDGET_MS);
   });
 });
 
@@ -1633,6 +1637,7 @@ describe("prop geometry", () => {
     }
   });
 
+  // Hundreds of slices per prop: well past the default 5 s on a CI runner, hence the timeout.
   test("slicing every prop at random, centre and grazing planes keeps both halves closed", () => {
     props.forEach(([name, make], s) => {
       const geometry = make();
@@ -1645,7 +1650,7 @@ describe("prop geometry", () => {
       }
       expect(cuts).toBeGreaterThan(300);
     });
-  });
+  }, 60_000);
 
   // Every distinct face plane of every prop, both ways round: thousands of slices, hence the timeout.
   test("planes containing a face of each prop stay closed", () => {
@@ -1666,7 +1671,7 @@ describe("prop geometry", () => {
     for (const [name, make] of props) {
       const { best, line } = timeSlices(name, make());
       report.push(line);
-      expect(best).toBeLessThan(0.5);
+      expect(best).toBeLessThan(SLICE_BUDGET_MS);
     }
     console.log(`slice props:\n  ${report.join("\n  ")}`);
   });
@@ -2051,7 +2056,7 @@ describe("multi-part meshes", () => {
       disc(1, 24) - disc(0.55, 16) + disc(0.45, 16) - disc(0.2, 8) + disc(0.1, 6),
       6,
     );
-  });
+  }, 60_000);
 
   test("planes in the gaps between parts, or along their facing sides, split them cleanly", () => {
     const z = new THREE.Vector3(0, 0, 1);
@@ -2094,7 +2099,7 @@ describe("multi-part meshes", () => {
         });
       }
     }
-  });
+  }, 60_000);
 
   test("re-slicing multi-part pieces again and again stays closed", () => {
     assemblies.forEach(([name, make], s) => {
@@ -2139,7 +2144,7 @@ describe("multi-part meshes", () => {
     for (const [name, make] of assemblies) {
       const { best, line } = timeSlices(name, make().geometry);
       report.push(line);
-      expect(best).toBeLessThan(0.5);
+      expect(best).toBeLessThan(SLICE_BUDGET_MS);
     }
     console.log(`slice multi-part meshes:\n  ${report.join("\n  ")}`);
   });

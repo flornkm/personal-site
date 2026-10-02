@@ -1,4 +1,7 @@
+import { CLAUDE_2010_ASSETS } from "@/features/experiments/components/claude-2010-assets";
 import { ExperimentDrawer } from "@/features/experiments/components/experiment-drawer";
+import { SLOP_NINJA_ASSETS } from "@/features/experiments/components/slop-ninja/assets";
+import { preloadImages } from "@/features/experiments/preload-assets";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { absoluteUrl, canonicalLink } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -25,6 +28,8 @@ interface Experiment {
   poster: string;
   posterDark: string;
   Component: PreloadableComponent;
+  // Static images the demo loads on mount, warmed along with its chunk.
+  assets: readonly string[];
 }
 
 // The centered modal the tile morphs into when opened.
@@ -35,6 +40,7 @@ const experiment = (
   title: string,
   tag: string,
   Component: PreloadableComponent,
+  assets: readonly string[] = [],
 ): Experiment => ({
   slug,
   title,
@@ -42,6 +48,7 @@ const experiment = (
   poster: `/experiments/${slug}.webp`,
   posterDark: `/experiments/${slug}-dark.webp`,
   Component,
+  assets,
 });
 
 // Each demo is lazy-loaded. validateSearch and the tile grid read this array in the route's
@@ -50,6 +57,17 @@ const experiment = (
 // load, the homepage included. Loading each Component behind import() keeps that code in its own
 // chunk, fetched only when its tile is opened, and lets this stay the single source of truth.
 const EXPERIMENTS: Experiment[] = [
+  experiment(
+    "slop-ninja",
+    "Slop Ninja",
+    "PS2",
+    lazyDemo(() =>
+      import("@/features/experiments/components/slop-ninja").then((m) => ({
+        default: m.SlopNinja,
+      })),
+    ),
+    SLOP_NINJA_ASSETS,
+  ),
   experiment(
     "icon-lens",
     "Icon Lens",
@@ -89,6 +107,7 @@ const EXPERIMENTS: Experiment[] = [
         default: m.Claude2010,
       })),
     ),
+    CLAUDE_2010_ASSETS,
   ),
   experiment(
     "claude-mark",
@@ -392,8 +411,12 @@ interface ExperimentTileProps {
 }
 
 function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: ExperimentTileProps) {
-  const { title, poster, posterDark, Component } = experiment;
+  const { title, poster, posterDark, Component, assets } = experiment;
   const expanded = isActive && morph;
+  const warm = () => {
+    void Component.preload();
+    preloadImages(assets);
+  };
 
   // Hide a missing poster gracefully instead of showing a broken-image glyph.
   const [posterError, setPosterError] = useState(false);
@@ -518,11 +541,12 @@ function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: Experi
           <button
             type="button"
             onClick={onOpen}
-            // Warm the demo's chunk on intent (hover / keyboard focus / press start) so it's
-            // fetched before the open morph finishes, not once the dialog has fully mounted.
-            onPointerEnter={() => Component.preload()}
-            onFocus={() => Component.preload()}
-            onPointerDown={() => Component.preload()}
+            // Warm the demo's chunk and static images on intent (hover / keyboard focus / press
+            // start) so they're fetched before the open morph finishes, not once the dialog has
+            // fully mounted.
+            onPointerEnter={warm}
+            onFocus={warm}
+            onPointerDown={warm}
             aria-label={`Open ${title}`}
             className="absolute inset-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-default"
           />

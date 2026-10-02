@@ -51,6 +51,16 @@ const experiment = (
 // chunk, fetched only when its tile is opened, and lets this stay the single source of truth.
 const EXPERIMENTS: Experiment[] = [
   experiment(
+    "slop-ninja",
+    "Slop Ninja",
+    "PS2",
+    lazyDemo(() =>
+      import("@/features/experiments/components/slop-ninja").then((m) => ({
+        default: m.SlopNinja,
+      })),
+    ),
+  ),
+  experiment(
     "icon-lens",
     "Icon Lens",
     "Refraction",

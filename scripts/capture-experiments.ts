@@ -66,6 +66,7 @@ const SLUGS: Record<string, number> = {
   "claude-2010": 2500, // room webp assets load + first pixelated render
   "icon-lens": 2500, // WebGL boot + the engraving texture rasterizes
   "liquid-glass": 2500, // WebGL boot + the type raster waits on document.fonts.ready
+  "slop-ninja": 2500, // WebGL boot + textures load + the menu prop pops in
 };
 
 // Optionally restrict to a subset, e.g. CAPTURE_ONLY=copy,paste-editor
@@ -80,6 +81,19 @@ const CLICKS: Record<string, string> = {};
 // Optional interaction to stage a slug right before the shot (after the settle
 // wait) — the live demo is untouched.
 const PREPARE: Record<string, (dialog: Locator, page: Page) => Promise<void>> = {
+  // A ghost blade sweeps the start screen's prop every few seconds. Hold a still press in an
+  // empty corner (it suppresses the ghost and cuts nothing) so the poster is just the prop, and
+  // leave the mute button out of the thumbnail.
+  "slop-ninja": async (dialog, page) => {
+    await dialog.locator('[aria-label="Mute sound"]').evaluate((el: HTMLElement) => {
+      el.style.display = "none";
+    });
+    const box = await dialog.boundingBox();
+    if (!box) return;
+    await page.mouse.move(box.x + box.width * 0.06, box.y + box.height * 0.1);
+    await page.mouse.down();
+    await page.waitForTimeout(600);
+  },
   // Opens as a plain wordmark. Click inside it and shoot a fifth of a second later, so
   // the poster catches the shockwave's ring while it is still crossing the mark.
   "magnet-mark": async (dialog, page) => {

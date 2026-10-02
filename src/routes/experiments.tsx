@@ -8,7 +8,15 @@ import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { IconCrossSmall } from "central-icons/IconCrossSmall";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
-import { type ComponentType, lazy, Suspense, useCallback, useRef, useState } from "react";
+import {
+  type ComponentType,
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 // A lazy component that also exposes `preload()` — calling it fires the underlying dynamic
 // import so the chunk is fetched ahead of render (on hover/focus/pointer-down), not only once
@@ -418,6 +426,13 @@ function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: Experi
     preloadImages(assets);
   };
 
+  // Focus moves into the dialog on open so Escape (handled on the box) works without a global
+  // key listener. It lands on the box itself, not the close button, so nothing shows a ring.
+  const boxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (expanded) boxRef.current?.focus({ preventScroll: true });
+  }, [expanded]);
+
   // Hide a missing poster gracefully instead of showing a broken-image glyph.
   const [posterError, setPosterError] = useState(false);
 
@@ -447,6 +462,8 @@ function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: Experi
     // Fixed-size placeholder so the grid never reflows while the tile lifts into the expanded view.
     <li className="relative aspect-[4/3]">
       <motion.div
+        ref={boxRef}
+        tabIndex={expanded ? -1 : undefined}
         layout
         layoutDependency={expanded}
         data-experiment-tile={expanded ? "open" : "closed"}
@@ -461,7 +478,7 @@ function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: Experi
           if (expanded && e.key === "Escape") onClose();
         }}
         className={cn(
-          "group overflow-hidden",
+          "group overflow-hidden outline-none",
           expanded
             ? // Definite width AND height (not aspect-ratio): inset-0 pins top/bottom, so
               // aspect-ratio would be ignored and the height would stretch to the viewport.
@@ -558,9 +575,6 @@ function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: Experi
           <motion.button
             type="button"
             onClick={onClose}
-            // Pulls focus into the dialog on open so Escape (handled on the container
-            // above) is reachable without a global key listener.
-            autoFocus
             aria-label="Close"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

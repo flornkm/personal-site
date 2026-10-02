@@ -1,4 +1,12 @@
 import { type CSSProperties, useEffect, useRef, useState } from "react";
+import {
+  ASSET_BASE,
+  CHAIR_FRAMES,
+  DOOR_FRAMES,
+  IMAGE_IDS,
+  LAYER_IDS,
+  TV_FRAMES,
+} from "./claude-2010-assets";
 import { Claude2010Chat } from "./claude-2010-chat";
 import "./claude-2010-demo.css";
 import { play, setAmbience, setPhoneRing, setTvLoop } from "./claude-2010-sounds";
@@ -12,36 +20,9 @@ import { play, setAmbience, setPhoneRing, setTvLoop } from "./claude-2010-sounds
    most other things in the room hide a low-fps easter egg (chair spin flipbook,
    TV static, lamp glow, squishy beanbag, hopping plush). */
 
-const ASSET_BASE = "/experiments/room-2010";
-
 const STAGE_W = 1290;
 const STAGE_H = 1150;
 
-// Painter order, far to near. All layers are full-frame; only the plush (kept from
-// the original set — it's the mascot) is positioned by hand, on the desk.
-// The open door swings into the room past the desk's corner, so it draws after
-// the desk stack; closed it never overlaps anything nearer than the wall.
-const LAYER_IDS = [
-  "shell",
-  "posters",
-  "props",
-  "desk",
-  "crt",
-  "deskstuff",
-  "phone",
-  "tv",
-  "door",
-  "floorlamp",
-  "chair",
-  "front",
-  "bean",
-  "ball",
-  "bed",
-] as const;
-
-const CHAIR_FRAMES = Array.from({ length: 8 }, (_, i) => `chair-spin-${i}`);
-const TV_FRAMES = Array.from({ length: 3 }, (_, i) => `tv-on-${i}`);
-const DOOR_FRAMES = Array.from({ length: 3 }, (_, i) => `door-${i}`);
 const PLUSH_RECT = { x: 838, y: 440, w: 72, h: 72 * (449 / 500) };
 
 // Projected rects from the Blender render (layers.json, minus the crop offset).
@@ -77,14 +58,7 @@ interface View {
 
 function loadImages(): Record<string, HTMLImageElement> {
   const images: Record<string, HTMLImageElement> = {};
-  for (const id of [
-    ...LAYER_IDS,
-    ...CHAIR_FRAMES,
-    ...TV_FRAMES,
-    ...DOOR_FRAMES,
-    "floorlamp-on",
-    "plush",
-  ]) {
+  for (const id of IMAGE_IDS) {
     const img = new Image();
     img.src = `${ASSET_BASE}/${id}.webp`;
     images[id] = img;

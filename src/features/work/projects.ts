@@ -45,7 +45,10 @@ export const PROJECTS: Project[] = [
   },
   {
     name: "Prodex",
+    description:
+      "Design work for Prodex, an AI platform that helps manufacturers plan and optimize production.",
     date: "2026",
+    url: "https://prodexlabs.com",
   },
   {
     name: "Sona",

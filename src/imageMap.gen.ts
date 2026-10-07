@@ -44,7 +44,6 @@ export const imageManifest: Record<string, ImageManifestEntry> = {
   "/images/kruemel/resting.webp": { width: 1200, height: 1600, thumbhash: "jhgGDQKYh5B3uHa4d5aXdqqQzQv5", widths: [640] },
   "/images/launchvideo-icon.svg": { width: 256, height: 256, thumbhash: null },
   "/images/maya-mono.svg": { width: 100, height: 100, thumbhash: null },
-  "/images/rogo/notifications.webp": { width: 5040, height: 3000, thumbhash: "OfgBBIDAymqfVmWIR0k7EA505g==", widths: [640, 1280, 2048] },
   "/images/slack.png": { width: 512, height: 512, thumbhash: "oviBDQQjiGa5BndHkIKAlweHCIeIh3B7hw==", transparent: true },
   "/images/sona/bulk-delete.webp": { width: 1380, height: 3000, thumbhash: "JhiGCgYPd3WHyAhngH4G6AgYh4eAcAc=", widths: [640] },
   "/images/sona/devices.webp": { width: 5040, height: 3000, thumbhash: "+QcKBIDHd3iPh3dzhozxulogGQ==", widths: [640, 1280, 2048] },

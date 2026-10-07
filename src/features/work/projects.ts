@@ -18,15 +18,11 @@ export const PROJECTS: Project[] = [
   {
     name: "Rogo",
     description:
-      "Design engineering for Rogo, an AI platform for financial research — design system, notifications, and agent workflows.",
+      "Design engineering for Rogo, an AI platform for financial research — the marketing website and careers page.",
     date: "2025 – 2026",
     url: "https://rogo.ai",
     mediaOrder: 0,
-    media: [
-      "/videos/rogo/design-system.webm",
-      "/images/rogo/notifications.webp",
-      "/videos/rogo/agent.webm",
-    ],
+    media: ["/videos/rogo/website-hero.webm", "/videos/rogo/website-careers.webm"],
   },
   {
     name: "Flow",
@@ -38,12 +34,21 @@ export const PROJECTS: Project[] = [
     media: ["/images/flow/hero.webp", "/videos/flow/company.webm", "/videos/flow/404.webm"],
   },
   {
+    name: "Prodex",
+    description:
+      "Design and engineering for Prodex’s website, which introduces Dexter, an AI industrial engineer for factories.",
+    date: "2026",
+    url: "https://prodexlabs.com",
+    mediaOrder: 2,
+    media: ["/videos/prodex/website-hero.webm", "/videos/prodex/website-tour.webm"],
+  },
+  {
     name: "Sona",
     description:
       "Product design for Sona, an app that records conversations and turns them into transcripts, summaries, and key insights.",
     date: "2024 – 2025",
     url: "https://sona.wtf",
-    mediaOrder: 2,
+    mediaOrder: 3,
     media: [
       [
         "/images/sona/recording.webp",

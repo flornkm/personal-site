@@ -57,8 +57,8 @@ function WideImage({ src, alt, priority }: { src: string; alt: string; priority?
         objectFit="contain"
         priority={priority}
         draggable={false}
-        sizes="(min-width: 1600px) 768px, (min-width: 768px) 55vw, 92vw"
-        className="mx-auto h-auto w-full max-w-3xl rounded-sm outline -outline-offset-1 outline-black/5 select-none dark:outline-white/15"
+        sizes="(min-width: 768px) 55vw, 92vw"
+        className="h-auto w-full rounded-sm outline -outline-offset-1 outline-black/5 select-none dark:outline-white/15"
       />
     </div>
   );
@@ -105,7 +105,7 @@ function WorkVideo({ src, alt }: { src: string; alt: string }) {
           clipping it shaves the corner arc's outer anti-aliasing, which reads as a
           cut-off ring. Unclipped, it renders identically to the images' outline. */}
       <div
-        className="relative mx-auto w-full max-w-3xl rounded-sm after:pointer-events-none after:absolute after:inset-0 after:rounded-sm after:outline after:-outline-offset-1 after:outline-black/5 dark:after:outline-white/15"
+        className="relative w-full rounded-sm after:pointer-events-none after:absolute after:inset-0 after:rounded-sm after:outline after:-outline-offset-1 after:outline-black/5 dark:after:outline-white/15"
         style={entry ? { aspectRatio: `${entry.width} / ${entry.height}` } : undefined}
       >
         <div className="absolute inset-0 overflow-hidden rounded-sm">
@@ -158,7 +158,7 @@ function MobileRow({
 }) {
   return (
     <div className="bg-image-card p-2 py-4 md:p-10 md:py-12">
-      <div className="mx-auto flex max-w-3xl gap-3">
+      <div className="flex gap-3">
         {images.map((src) => (
           <div key={src} className="min-w-0 flex-1 px-2 @container">
             <Image
@@ -167,7 +167,7 @@ function MobileRow({
               objectFit="contain"
               priority={priority}
               draggable={false}
-              sizes="(min-width: 768px) 320px, 30vw"
+              sizes="(min-width: 768px) 25vw, 30vw"
               className="h-auto w-full rounded-[16cqi] outline -outline-offset-1 outline-black/5 select-none dark:outline-white/15"
             />
           </div>

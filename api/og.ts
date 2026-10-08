@@ -1,6 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { ImageResponse } from "@vercel/og";
-import React from "react";
+import { createElement as h } from "react";
+
+// Keep this a .ts file without JSX: on Vercel's Node 24 runtime a .tsx entrypoint is
+// loaded as CommonJS and crashes on its first `import` (FUNCTION_INVOCATION_FAILED).
 
 // The licensed font binaries live on the private CDN (flornkm/cdn), not in this repo.
 // Satori can't parse the variable TTF or WOFF2, so these are the static weight-550
@@ -75,20 +78,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 function defaultCard(title: string) {
-  return (
-    <div
-      style={{
+  return h(
+    "div",
+    {
+      style: {
         width: "100%",
         height: "100%",
         background: "#ffffff",
         display: "flex",
         padding: "64px 72px",
         position: "relative",
-      }}
-    >
-      <img alt="Florian Kiem" width={FK_WIDTH} height={FK_HEIGHT} src={fkLogoDataUri} />
-      <div
-        style={{
+      },
+    },
+    h("img", { alt: "Florian Kiem", width: FK_WIDTH, height: FK_HEIGHT, src: fkLogoDataUri }),
+    h(
+      "div",
+      {
+        style: {
           position: "absolute",
           top: 0,
           left: 0,
@@ -98,10 +104,12 @@ function defaultCard(title: string) {
           alignItems: "center",
           justifyContent: "center",
           padding: "0 96px",
-        }}
-      >
-        <div
-          style={{
+        },
+      },
+      h(
+        "div",
+        {
+          style: {
             fontFamily: "Wagram",
             fontWeight: 500,
             fontStyle: "italic",
@@ -110,36 +118,36 @@ function defaultCard(title: string) {
             color: "#111111",
             lineHeight: 1,
             textAlign: "center",
-          }}
-        >
-          {title}
-        </div>
-      </div>
-    </div>
+          },
+        },
+        title,
+      ),
+    ),
   );
 }
 
 function writingCard(_title: string, iconBase64?: string) {
-  return (
-    <div
-      style={{
+  const icon = iconBase64
+    ? h("img", {
+        alt: "",
+        width: 360,
+        height: 360,
+        src: `data:image/svg+xml;base64,${iconBase64}`,
+        style: { width: 360, height: 360 },
+      })
+    : null;
+  return h(
+    "div",
+    {
+      style: {
         width: "100%",
         height: "100%",
         background: "#ffffff",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-      }}
-    >
-      {iconBase64 ? (
-        <img
-          alt=""
-          width={360}
-          height={360}
-          src={`data:image/svg+xml;base64,${iconBase64}`}
-          style={{ width: 360, height: 360 }}
-        />
-      ) : null}
-    </div>
+      },
+    },
+    icon,
   );
 }

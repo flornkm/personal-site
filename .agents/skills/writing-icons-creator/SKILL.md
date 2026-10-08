@@ -27,7 +27,7 @@ Example: `src/writing/the-art-of-not-shipping-everything/{article.mdx, icon.svg}
 
 If **no** `icon.svg` exists, a colored fallback icon is auto-generated from the slug (see `src/features/writing/lib/post-icon.ts`). Authoring an `icon.svg` always overrides the fallback. Prefer authoring one so the symbol actually relates to the post.
 
-The same icon is reused automatically in the article's **social/OG image** (`api/og.tsx` receives it pre-rendered from the route loader) — no extra step, but it's a good reason to make the mark meaningful.
+The same icon is reused automatically in the article's **social/OG image** (`api/og.ts` receives it pre-rendered from the route loader) — no extra step, but it's a good reason to make the mark meaningful.
 
 ## The rules (do not deviate)
 

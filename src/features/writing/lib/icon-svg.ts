@@ -1,4 +1,4 @@
-// Shared by the app and the OG function (api/og.tsx); keep free of Vite/React/Node APIs so both can import it.
+// Shared by the app and the OG function (api/og.ts); keep free of Vite/React/Node APIs so both can import it.
 
 export type PostIcon = {
   inner: string;

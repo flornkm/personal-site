@@ -18,7 +18,6 @@ Florian blends design and engineering to ship fast, polished interfaces. He tran
 - Writing: Notes, essays, and live experiments - [/writing](/writing), markdown at [/writing.md](/writing.md)
 - Contact: Email and social profiles - [/contact](/contact), markdown at [/contact.md](/contact.md)
 - Experiments: Interactive playground pieces - [/experiments](/experiments), markdown at [/experiments.md](/experiments.md)
-- Tools: Hardware and software Florian uses - [/tools](/tools), markdown at [/tools.md](/tools.md)
 - Colophon: Tech stack, inspirations, and credits - [/colophon](/colophon), markdown at [/colophon.md](/colophon.md)
 - Sitemap: Every page on this site - [/sitemap](/sitemap), machine-readable at [/sitemap.xml](/sitemap.xml)
 - Legal: [/imprint](/imprint), [/privacy-policy](/privacy-policy)

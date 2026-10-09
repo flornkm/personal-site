@@ -27,7 +27,6 @@
         "dayjs": "^1.11.21",
         "firebase-admin": "^13.5.0",
         "flubber": "^0.4.2",
-        "gradient-border-plugin": "^1.1.3",
         "gray-matter": "^4.0.3",
         "howler": "^2.2.4",
         "media-chrome": "^4.19.0",
@@ -1034,8 +1033,6 @@
     "gopd": ["gopd@1.2.0", "", {}, "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg=="],
 
     "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
-
-    "gradient-border-plugin": ["gradient-border-plugin@1.1.3", "", {}, "sha512-wS35FJK59+HUrmxKSTJZH4FECu6iWeUuHO9/zKlr1U5ScjX0uMsx8xQDI4t9Dk4p9U8rZUU0gl2VuXf3rKuRMw=="],
 
     "gray-matter": ["gray-matter@4.0.3", "", { "dependencies": { "js-yaml": "^3.13.1", "kind-of": "^6.0.2", "section-matter": "^1.0.0", "strip-bom-string": "^1.0.0" } }, "sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q=="],
 

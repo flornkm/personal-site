@@ -17,7 +17,6 @@ const isVideo = (src: string) => /\.(webm|mp4)$/i.test(src);
 const MORE_LINKS = [
   { name: "Colophon", href: "/colophon" },
   { name: "Experiments", href: "/experiments" },
-  { name: "Tools", href: "/tools" },
 ];
 
 const projectId = (project: Project) => `project-${project.name.toLowerCase()}`;
@@ -230,7 +229,7 @@ function IndexPage() {
         {/* Desktop shows these in the sidebar; on mobile they move into the footer's "More" column instead. */}
         {/* flex-wrap: on narrow desktops this row is wider than its 2-column
             track, and the indent footer sits pulled up right beside it — an
-            overflowing "Tools" would land on the footer's links. */}
+            overflowing link would land on the footer's links. */}
         <div className="mt-12 hidden items-center gap-x-4 gap-y-2 md:mt-0 md:flex md:shrink-0 md:flex-wrap md:pt-12">
           {MORE_LINKS.map((link) => (
             <Link

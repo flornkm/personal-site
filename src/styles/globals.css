@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadow-plugin";
-@import "gradient-border-plugin";
 @import "./colors.css";
 @import "./text.css";
 

@@ -31,7 +31,6 @@ const pagesColumnVariants = cva("flex flex-col items-start gap-2", {
 const MORE_LINKS: Tab[] = [
   { name: "Colophon", href: "/colophon" },
   { name: "Experiments", href: "/experiments" },
-  { name: "Tools", href: "/tools" },
 ];
 
 const LEGAL_LINKS: Tab[] = [

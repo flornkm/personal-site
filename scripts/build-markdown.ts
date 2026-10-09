@@ -47,7 +47,6 @@ ${PROJECTS.map(projectLine).join("\n\n")}
 - [Writing](${SITE_URL}/writing)
 - [Contact](${SITE_URL}/contact)
 - [Experiments](${SITE_URL}/experiments)
-- [Tools](${SITE_URL}/tools)
 - [Colophon](${SITE_URL}/colophon)`,
 );
 
@@ -106,20 +105,6 @@ page(
 A page collecting different design and code experiments. Each one is an interactive demo on the web page; a shared deep link (/experiments?demo=<slug>) opens it directly.
 
 ${experiments.map((e) => `- ${e.title} (${e.tag}) — ${SITE_URL}/experiments?demo=${e.slug}`).join("\n")}`,
-);
-
-// ---- Tools (mirrors src/routes/tools.tsx) -----------------------------------
-
-page(
-  "/tools",
-  "Tools ‹ Florian Kiem",
-  `# Tools
-
-Small web tools built by Florian Kiem:
-
-- Dither — https://dither.floriankiem.com
-- Gradient Border — https://gradient-border.floriankiem.com
-- Shadow — https://shadow.floriankiem.com`,
 );
 
 // ---- Colophon (mirrors src/routes/colophon.tsx highlights) ------------------

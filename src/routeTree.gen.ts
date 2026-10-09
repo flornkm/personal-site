@@ -9,57 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ToolsRouteImport } from './routes/tools'
-import { Route as SitemapRouteImport } from './routes/sitemap'
-import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as KruemelRouteImport } from './routes/kruemel'
-import { Route as ImprintRouteImport } from './routes/imprint'
-import { Route as ExperimentsRouteImport } from './routes/experiments'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ColophonRouteImport } from './routes/colophon'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ColophonRouteImport } from './routes/colophon'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ExperimentsRouteImport } from './routes/experiments'
+import { Route as ImprintRouteImport } from './routes/imprint'
+import { Route as KruemelRouteImport } from './routes/kruemel'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as SitemapRouteImport } from './routes/sitemap'
 import { Route as WritingIndexRouteImport } from './routes/writing/index'
 import { Route as WritingIdRouteImport } from './routes/writing/$id'
 
-const ToolsRoute = ToolsRouteImport.update({
-  id: '/tools',
-  path: '/tools',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapRoute = SitemapRouteImport.update({
-  id: '/sitemap',
-  path: '/sitemap',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KruemelRoute = KruemelRouteImport.update({
-  id: '/kruemel',
-  path: '/kruemel',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImprintRoute = ImprintRouteImport.update({
-  id: '/imprint',
-  path: '/imprint',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExperimentsRoute = ExperimentsRouteImport.update({
-  id: '/experiments',
-  path: '/experiments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ColophonRoute = ColophonRouteImport.update({
-  id: '/colophon',
-  path: '/colophon',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -67,9 +31,39 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ColophonRoute = ColophonRouteImport.update({
+  id: '/colophon',
+  path: '/colophon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExperimentsRoute = ExperimentsRouteImport.update({
+  id: '/experiments',
+  path: '/experiments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImprintRoute = ImprintRouteImport.update({
+  id: '/imprint',
+  path: '/imprint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KruemelRoute = KruemelRouteImport.update({
+  id: '/kruemel',
+  path: '/kruemel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapRoute = SitemapRouteImport.update({
+  id: '/sitemap',
+  path: '/sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WritingIndexRoute = WritingIndexRouteImport.update({
@@ -93,7 +87,6 @@ export interface FileRoutesByFullPath {
   '/kruemel': typeof KruemelRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap': typeof SitemapRoute
-  '/tools': typeof ToolsRoute
   '/writing/$id': typeof WritingIdRoute
   '/writing/': typeof WritingIndexRoute
 }
@@ -107,7 +100,6 @@ export interface FileRoutesByTo {
   '/kruemel': typeof KruemelRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap': typeof SitemapRoute
-  '/tools': typeof ToolsRoute
   '/writing/$id': typeof WritingIdRoute
   '/writing': typeof WritingIndexRoute
 }
@@ -122,7 +114,6 @@ export interface FileRoutesById {
   '/kruemel': typeof KruemelRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap': typeof SitemapRoute
-  '/tools': typeof ToolsRoute
   '/writing/$id': typeof WritingIdRoute
   '/writing/': typeof WritingIndexRoute
 }
@@ -138,7 +129,6 @@ export interface FileRouteTypes {
     | '/kruemel'
     | '/privacy-policy'
     | '/sitemap'
-    | '/tools'
     | '/writing/$id'
     | '/writing/'
   fileRoutesByTo: FileRoutesByTo
@@ -152,7 +142,6 @@ export interface FileRouteTypes {
     | '/kruemel'
     | '/privacy-policy'
     | '/sitemap'
-    | '/tools'
     | '/writing/$id'
     | '/writing'
   id:
@@ -166,7 +155,6 @@ export interface FileRouteTypes {
     | '/kruemel'
     | '/privacy-policy'
     | '/sitemap'
-    | '/tools'
     | '/writing/$id'
     | '/writing/'
   fileRoutesById: FileRoutesById
@@ -181,67 +169,17 @@ export interface RootRouteChildren {
   KruemelRoute: typeof KruemelRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   SitemapRoute: typeof SitemapRoute
-  ToolsRoute: typeof ToolsRoute
   WritingIdRoute: typeof WritingIdRoute
   WritingIndexRoute: typeof WritingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tools': {
-      id: '/tools'
-      path: '/tools'
-      fullPath: '/tools'
-      preLoaderRoute: typeof ToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap': {
-      id: '/sitemap'
-      path: '/sitemap'
-      fullPath: '/sitemap'
-      preLoaderRoute: typeof SitemapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kruemel': {
-      id: '/kruemel'
-      path: '/kruemel'
-      fullPath: '/kruemel'
-      preLoaderRoute: typeof KruemelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/imprint': {
-      id: '/imprint'
-      path: '/imprint'
-      fullPath: '/imprint'
-      preLoaderRoute: typeof ImprintRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/experiments': {
-      id: '/experiments'
-      path: '/experiments'
-      fullPath: '/experiments'
-      preLoaderRoute: typeof ExperimentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/colophon': {
-      id: '/colophon'
-      path: '/colophon'
-      fullPath: '/colophon'
-      preLoaderRoute: typeof ColophonRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -251,11 +189,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/colophon': {
+      id: '/colophon'
+      path: '/colophon'
+      fullPath: '/colophon'
+      preLoaderRoute: typeof ColophonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experiments': {
+      id: '/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof ExperimentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/imprint': {
+      id: '/imprint'
+      path: '/imprint'
+      fullPath: '/imprint'
+      preLoaderRoute: typeof ImprintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kruemel': {
+      id: '/kruemel'
+      path: '/kruemel'
+      fullPath: '/kruemel'
+      preLoaderRoute: typeof KruemelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap': {
+      id: '/sitemap'
+      path: '/sitemap'
+      fullPath: '/sitemap'
+      preLoaderRoute: typeof SitemapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/writing/': {
@@ -285,7 +265,6 @@ const rootRouteChildren: RootRouteChildren = {
   KruemelRoute: KruemelRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   SitemapRoute: SitemapRoute,
-  ToolsRoute: ToolsRoute,
   WritingIdRoute: WritingIdRoute,
   WritingIndexRoute: WritingIndexRoute,
 }

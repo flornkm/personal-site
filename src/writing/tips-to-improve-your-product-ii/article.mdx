@@ -1,0 +1,33 @@
+---
+title: Tips to improve your product II
+description: More tips, and a few small details, that make the web a better, more fun place to be in.
+date: 2026-10-10
+type: note
+---
+
+import { NumberInputScroll } from "./demos/number-input-scroll";
+import { SubmitButton } from "./demos/submit-button";
+
+# Tips to improve your product II
+
+## Number inputs change when you scroll
+
+Click an amount, then scroll the checkbook with the cursor still over it. Film in Chrome.
+
+<NumberInputScroll />
+
+```html
+<!-- Before -->
+<input type="number" />
+
+<!-- After -->
+<input type="text" inputmode="decimal" />
+```
+
+<br />
+
+## Don't disable the submit button
+
+Click _Invite_ with the address as it is. Switching modes resets the form.
+
+<SubmitButton />

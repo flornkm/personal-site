@@ -64,7 +64,7 @@ export function SubmitButton() {
   }
 
   return (
-    <figure className="not-prose mx-auto mt-2 mb-14 flex min-h-[256px] w-full flex-col items-center pt-8 pb-6 font-pretendard">
+    <figure className="not-prose mx-auto my-8 flex min-h-[374px] w-full max-w-[520px] flex-col items-center px-4 md:px-12 pt-24 pb-6 max-lg:-mx-4 rounded-sm outline -outline-offset-1 outline-black/5 dark:outline-white/8 font-pretendard">
       <form
         noValidate
         onSubmit={(event) => {

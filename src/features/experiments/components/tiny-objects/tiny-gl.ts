@@ -1,4 +1,4 @@
-/* Tiny sphere-traced objects in the same spirit as the chrome "$" on the cheque: a real solid
+/* Tiny sphere-traced objects: a real solid
    with depth and filleted edges, turned slowly in front of a perspective camera, lit by a
    procedural studio, one ray per cell of a fine grid. Each shape is an exact distance function
    written out in GLSL, so there is nothing to load or build. The material decides how the
@@ -198,6 +198,7 @@ uniform float u_sweep;
 uniform vec3 u_sweepColor;
 uniform float u_cells;
 uniform vec3 u_body;
+uniform float u_dark;
 
 mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
 float smin(float a, float b, float k) {
@@ -253,18 +254,27 @@ float occlusion(vec3 q, vec3 n) {
 // The studio, tuned for a white page: a mid-grey floor and wall for the metal to be dark
 // against, hard-edged strips so reflections read as streaks, and one strip that travels.
 vec3 room(vec3 d) {
-  vec3 c = mix(vec3(0.11, 0.115, 0.125), vec3(0.32, 0.33, 0.35), smoothstep(-0.45, 0.05, d.y));
+  vec3 floorCol = mix(vec3(0.08, 0.085, 0.095), vec3(0.015, 0.016, 0.02), u_dark);
+  vec3 wallCol = mix(vec3(0.3, 0.31, 0.33), vec3(0.1, 0.105, 0.115), u_dark);
+  vec3 c = mix(floorCol, wallCol, smoothstep(-0.45, 0.05, d.y));
   c = mix(c, vec3(1.25, 1.25, 1.28), smoothstep(0.12, 0.7, d.y));
   c *= 1.0 - 0.25 * exp(-pow((d.y + 0.02) * 9.0, 2.0));
   float pitchAngle = atan(d.y, d.z);
   float yawAngle = atan(d.x, d.z);
-  c += vec3(1.0) * smoothstep(0.12, 0.04, abs(pitchAngle - 0.9)) * 2.4;
-  c += vec3(0.85, 0.9, 1.0) * smoothstep(0.1, 0.03, abs(pitchAngle + 1.0)) * 1.4;
+  c += vec3(1.0) * smoothstep(0.1, 0.03, abs(pitchAngle - 0.9)) * 3.2;
+  c += vec3(0.85, 0.9, 1.0) * smoothstep(0.08, 0.02, abs(pitchAngle + 1.0)) * 1.8;
+  c += vec3(1.0) * smoothstep(0.06, 0.015, abs(yawAngle + 1.1)) * 1.6;
   c += u_sweepColor * smoothstep(0.32, 0.08, abs(yawAngle - u_sweep)) * 1.5;
   c += vec3(1.0) * pow(max(dot(d, normalize(vec3(0.25, 0.3, 0.92))), 0.0), 10.0) * 1.8;
   c += vec3(1.0) * pow(max(dot(d, u_key), 0.0), 24.0) * 3.0;
   c += vec3(0.7, 0.75, 0.85) * pow(max(dot(d, normalize(vec3(-0.7, 0.3, -0.65))), 0.0), 6.0) * 0.5;
   return c;
+}
+
+// Pin-sharp highlights from the two main lamps: the glints that make a surface read as polished.
+float glints(vec3 R) {
+  return pow(max(dot(R, u_key), 0.0), 140.0) * 7.0
+       + pow(max(dot(R, normalize(vec3(-0.35, 0.55, 0.76))), 0.0), 70.0) * 2.5;
 }
 
 vec3 tonemap(vec3 x) {
@@ -308,13 +318,13 @@ void main() {
 
 #if MATERIAL == 0
   vec3 F0 = vec3(0.92, 0.93, 0.95);
-  color = room(R) * (F0 + (1.0 - F0) * fresnel) * mix(0.4, 1.0, ao);
+  color = (room(R) + glints(R)) * (F0 + (1.0 - F0) * fresnel) * mix(0.4, 1.0, ao);
 #elif MATERIAL == 1
   vec3 F0 = vec3(1.0, 0.68, 0.22);
   vec3 env = room(R);
   // Gold tints what it mirrors; push the tint into the brights too so it never greys out.
   env = mix(env, env * vec3(1.0, 0.82, 0.45), 0.5);
-  color = env * (F0 + (1.0 - F0) * fresnel) * mix(0.4, 1.0, ao);
+  color = (env + glints(R) * vec3(1.0, 0.9, 0.7)) * (F0 + (1.0 - F0) * fresnel) * mix(0.4, 1.0, ao);
 #elif MATERIAL == 2
   // Enamel: a coloured body lit by the key, under a thin clear coat that mirrors the studio.
   vec3 body = u_body;
@@ -326,18 +336,20 @@ void main() {
   float lambert = max(dot(N, u_key), 0.0);
   vec3 diffuse = body * (0.28 + 0.85 * lambert) * mix(0.55, 1.0, ao);
   float coat = 0.04 + 0.96 * fresnel;
-  color = diffuse * (1.0 - coat) + room(R) * mix(0.08, 1.0, coat) * 0.4;
+  color = diffuse * (1.0 - coat) + room(R) * mix(0.1, 1.0, coat) * 0.5 + glints(R) * 0.9;
 #else
   // Glass: what the studio looks like through the drop, plus what it mirrors, weighted by
   // Fresnel; the body is see-through, so it is only partly opaque except at the rim.
   float F = 0.04 + 0.96 * fresnel;
-  vec3 through = room(refract(-V, N, 0.75)) * vec3(0.5, 0.78, 1.0);
-  float glint = pow(max(dot(R, u_key), 0.0), 90.0) * 6.0 + pow(max(dot(R, normalize(vec3(0.3, 0.45, 0.85))), 0.0), 40.0) * 2.5;
-  color = through * (1.0 - F) * 0.9 + room(R) * F * 1.3 + vec3(glint);
-  alpha = clamp(0.38 + F * 1.6 + glint, 0.0, 1.0);
+  // Lifted and tinted so the drop reads as clear water on a dark page as well as a light one.
+  vec3 tint = vec3(0.55, 0.8, 1.0);
+  vec3 through = room(refract(-V, N, 0.75)) * tint + tint * mix(0.08, 0.28, u_dark);
+  float glint = glints(R) * 1.2 + pow(max(dot(R, normalize(vec3(0.3, 0.45, 0.85))), 0.0), 40.0) * 2.0;
+  color = through * (1.0 - F) * 0.9 + room(R) * F * 1.4 + vec3(glint);
+  alpha = clamp(mix(0.42, 0.62, u_dark) + F * 1.6 + glint, 0.0, 1.0);
 #endif
 
-  outColor = vec4(tonemap(max(color, vec3(0.0))) * alpha, alpha);
+  outColor = vec4(tonemap(max(color, vec3(0.0)) * 1.12) * alpha, alpha);
 }`;
 
 function compile(gl: WebGL2RenderingContext, type: number, source: string) {
@@ -371,11 +383,13 @@ function orientation(yaw: number, pitch: number, roll: number): Float32Array {
   ]);
 }
 
-export type TinyRenderer = { draw: (time: number) => void; dispose: () => void };
+export type TinyRenderer = { draw: (time: number, dark: boolean) => void; dispose: () => void };
 
 export function createTinyRenderer(
   canvas: HTMLCanvasElement,
   shape: TinyShape,
+  // Rays across the canvas. About 1.5 per CSS pixel keeps the faint pixel stepping.
+  cells: number,
 ): TinyRenderer | null {
   const gl = canvas.getContext("webgl2", {
     premultipliedAlpha: true,
@@ -413,11 +427,12 @@ export function createTinyRenderer(
     sweep: at("u_sweep"),
     sweepColor: at("u_sweepColor"),
     body: at("u_body"),
+    dark: at("u_dark"),
     cells: at("u_cells"),
   };
   gl.uniform3f(u.sweepColor, ...spec.sweep);
   gl.uniform3f(u.body, ...(spec.body ?? [1.0, 0.6, 0.03]));
-  gl.uniform1f(u.cells, 54);
+  gl.uniform1f(u.cells, cells);
   // Each object gets its own phase so a page of them never sways in step.
   const phase = {
     key: 0.4,
@@ -431,7 +446,8 @@ export function createTinyRenderer(
   }[shape];
 
   return {
-    draw(time) {
+    draw(time, dark) {
+      gl.uniform1f(u.dark, dark ? 1 : 0);
       const t = time + phase;
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.clearColor(0, 0, 0, 0);

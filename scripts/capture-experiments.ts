@@ -67,6 +67,7 @@ const SLUGS: Record<string, number> = {
   "icon-lens": 2500, // WebGL boot + the engraving texture rasterizes
   "liquid-glass": 2500, // WebGL boot + the type raster waits on document.fonts.ready
   "slop-ninja": 2500, // WebGL boot + textures load + the menu prop pops in
+  "tiny-objects": 2000, // eight WebGL contexts boot and draw their first frame
 };
 
 // Optionally restrict to a subset, e.g. CAPTURE_ONLY=copy,paste-editor

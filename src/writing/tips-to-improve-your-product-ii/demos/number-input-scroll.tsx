@@ -94,14 +94,15 @@ const CHEQUES = [
 ];
 
 const LABEL = "text-[9px] leading-[11px] font-medium tracking-[0.08em] text-tertiary uppercase";
-const RULE = "border-b border-[oklch(0.6_0.02_250/0.35)] pb-0.5";
+const RULE =
+  "border-b border-[oklch(0.6_0.02_250/0.35)] pb-0.5 dark:border-[oklch(0.75_0.02_250/0.25)]";
 
 export function NumberInputScroll() {
   const [mode, setMode] = useState<Mode>("number");
   const isNumber = mode === "number";
 
   return (
-    <figure className="not-prose mx-auto mt-2 mb-14 flex min-h-[374px] w-full flex-col items-center pt-6 pb-6 font-pretendard">
+    <figure className="not-prose mx-auto my-8 flex min-h-[374px] w-full max-w-[520px] flex-col items-center px-4 md:px-12 pt-6 pb-6 max-lg:-mx-4 rounded-sm outline -outline-offset-1 outline-black/5 dark:outline-white/8 font-pretendard">
       {/* A checkbook to scroll through, so there is something for the wheel to do. Over a
           focused number field it never gets there: the amount changes and the book stays put. */}
       <div className="h-[250px] w-full max-w-[384px] overflow-y-auto overscroll-contain px-4 py-4 [mask-image:linear-gradient(to_bottom,transparent,black_16px,black_calc(100%-28px),transparent)] [scrollbar-width:none]">
@@ -166,16 +167,16 @@ function Cheque({
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-[14px] bg-[oklch(0.975_0.005_250)] px-4 pt-3.5 pb-3 smooth-shadow-ring-md"
+      className="relative w-full overflow-hidden rounded-[14px] bg-[oklch(0.975_0.005_250)] px-4 pt-3.5 pb-3 smooth-shadow-ring-md [--guilloche:oklch(0.6_0.02_250/0.07)] dark:bg-[oklch(0.24_0.012_250)] dark:[--guilloche:oklch(0.85_0.02_250/0.05)]"
       style={{
         // Two faint crossing line sets: the security tint every cheque is printed on.
         backgroundImage:
-          "repeating-linear-gradient(28deg, oklch(0.6 0.02 250 / 0.07) 0 1px, transparent 1px 7px), repeating-linear-gradient(-28deg, oklch(0.6 0.02 250 / 0.05) 0 1px, transparent 1px 7px)",
+          "repeating-linear-gradient(28deg, var(--guilloche) 0 1px, transparent 1px 7px), repeating-linear-gradient(-28deg, var(--guilloche) 0 1px, transparent 1px 7px)",
       }}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-[5px] rounded-[10px] shadow-[inset_0_0_0_1px_oklch(0.6_0.02_250/0.18)]"
+        className="pointer-events-none absolute inset-[5px] rounded-[10px] shadow-[inset_0_0_0_1px_oklch(0.6_0.02_250/0.18)] dark:shadow-[inset_0_0_0_1px_oklch(0.8_0.02_250/0.12)]"
       />
 
       <div className="relative flex items-start justify-between">
@@ -206,7 +207,7 @@ function Cheque({
         >
           {payee}
         </p>
-        <label className="flex h-9 w-[112px] shrink-0 items-center gap-1 rounded-[8px] bg-white px-2.5 text-[14px] font-medium text-primary shadow-[inset_0_0_0_1px_oklch(0.6_0.02_250/0.3)] has-focus-visible:shadow-[inset_0_0_0_1.5px_oklch(0.7_0.12_240),0_0_0_3px_oklch(0.7_0.12_240/0.16)]">
+        <label className="flex h-9 w-[112px] shrink-0 items-center gap-1 rounded-[8px] bg-white px-2.5 dark:bg-[oklch(0.3_0.012_250)] dark:shadow-[inset_0_0_0_1px_oklch(0.8_0.02_250/0.15)] text-[14px] font-medium text-primary shadow-[inset_0_0_0_1px_oklch(0.6_0.02_250/0.3)] has-focus-visible:shadow-[inset_0_0_0_1.5px_oklch(0.7_0.12_240),0_0_0_3px_oklch(0.7_0.12_240/0.16)]">
           <span className="text-tertiary">$</span>
           {/* key: switching modes remounts the input so the browser drops the old type's state. */}
           <input

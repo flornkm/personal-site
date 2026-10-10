@@ -23,6 +23,7 @@ const TRIGGER = cn(
   "rounded-full bg-surface py-1 pl-4 pr-2.5 text-[13px] font-medium text-primary",
   "smooth-shadow-ring-xs",
   "outline-none transition-colors hover:bg-surface-tertiary dark:hover:bg-surface-secondary",
+  "active:bg-interactive-active active:duration-0",
   "focus-visible:ring-2 focus-visible:ring-default",
 );
 

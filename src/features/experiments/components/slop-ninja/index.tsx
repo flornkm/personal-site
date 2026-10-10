@@ -50,7 +50,7 @@ export function SlopNinja() {
           aria-pressed={muted}
           // A finger needs more than the 28px glyph box; the hit area grows without the button
           // moving, so the board's corner clearance holds.
-          className="absolute bottom-3 right-3 flex size-7 cursor-pointer items-center justify-center rounded-sm text-neutral-500 transition-colors outline-none hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-default pointer-coarse:after:absolute pointer-coarse:after:-inset-2 pointer-coarse:after:content-[''] dark:text-neutral-400 dark:hover:bg-white/5"
+          className="absolute bottom-3 right-3 flex size-7 cursor-pointer items-center justify-center rounded-sm text-neutral-500 transition-colors outline-none hover:bg-black/5 active:bg-black/8 active:duration-0 focus-visible:ring-2 focus-visible:ring-default pointer-coarse:after:absolute pointer-coarse:after:-inset-2 pointer-coarse:after:content-[''] dark:text-neutral-400 dark:hover:bg-white/5"
         >
           <Icon className="size-4" />
         </button>

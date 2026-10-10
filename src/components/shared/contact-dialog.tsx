@@ -95,7 +95,7 @@ export default function ContactDialog({
               ? // Mobile: pin to the viewport, capped at 380px and centered (mx-auto, not a transform, so it doesn't fight the layout animation) so it never grows too wide or overflows. Desktop: anchored top-right like before.
                 // 286px makes the featured tile square: its width matches the 4-row link column's height.
                 "fixed inset-x-0 bottom-20 mx-auto w-[286px] max-w-[calc(100vw-1rem)] md:absolute md:inset-x-auto md:mx-0 md:bottom-auto md:right-0 md:top-0 md:w-[286px] md:max-w-none"
-              : "absolute right-0 bottom-0 md:bottom-auto md:top-0 hover:bg-interactive-secondary-hover",
+              : "absolute right-0 bottom-0 md:bottom-auto md:top-0 hover:bg-interactive-secondary-hover active:bg-interactive-secondary-active active:duration-0",
           )}
           style={isOpen ? { borderRadius: 8 } : closedRadius}
         >
@@ -116,7 +116,7 @@ export default function ContactDialog({
                     type="button"
                     onClick={close}
                     aria-label="Close contact dialog"
-                    className="size-6 flex items-center justify-center rounded-sm text-neutral-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                    className="size-6 flex items-center justify-center rounded-sm text-neutral-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/8 dark:active:bg-white/8 transition-colors active:duration-0 cursor-pointer"
                   >
                     <IconCrossSmall className="size-4" />
                   </button>
@@ -129,7 +129,7 @@ export default function ContactDialog({
                         href={link.href}
                         target={isExternal(link.href) ? "_blank" : undefined}
                         rel={isExternal(link.href) ? "noopener noreferrer" : undefined}
-                        className="flex items-center gap-2.5 px-1.5 py-1.5 rounded-sm hover:bg-black/5 dark:hover:bg-white/5 text-sm"
+                        className="flex items-center gap-2.5 px-1.5 py-1.5 rounded-sm hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/8 dark:active:bg-white/8 transition-colors active:duration-0 text-sm"
                       >
                         <link.icon className="size-4 shrink-0" />
                         <span className="font-medium">{link.name}</span>
@@ -143,7 +143,7 @@ export default function ContactDialog({
                       aria-label={
                         copied ? "Email address copied" : `Copy email ${FEATURED_LINK.handle}`
                       }
-                      className="flex flex-col rounded-sm bg-black/5 dark:bg-white/5 p-3 pb-2 text-left hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                      className="flex flex-col rounded-sm bg-black/5 dark:bg-white/5 p-3 pb-2 text-left hover:bg-black/10 dark:hover:bg-white/10 active:bg-black/13 dark:active:bg-white/13 transition-colors active:duration-0 cursor-pointer"
                     >
                       <div className="relative flex-1 min-h-0">
                         <MailLines shape={copied ? "check" : "mail"} className="absolute inset-0" />

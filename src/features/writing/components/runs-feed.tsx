@@ -171,7 +171,7 @@ function RunItem({ run }: { run: Run }) {
     <li>
       <RunStats run={run} />
       {run.description && (
-        <p className="relative mx-auto mt-3 w-full max-w-[460px] text-balance text-sm leading-[1.5] text-primary">
+        <p className="relative mx-auto mt-3 w-full max-w-[460px] text-sm leading-[1.5] text-primary">
           {/* Hangs in the left margin on desktop (baseline-aligned via matching text size and
               leading) so the note text keeps the column's left edge; hidden on mobile where
               there's no margin to hang into — the summary stands on its own there. */}

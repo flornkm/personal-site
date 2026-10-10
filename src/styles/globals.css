@@ -201,6 +201,8 @@ body {
      narrow digits and makes dates/numbers in prose read loosely tracked. Proportional is the
      right default for running text; the few spots needing aligned digits opt into tabular-nums. */
   font-variant-numeric: proportional-nums;
+  /* Inherited by all text: avoids single-word last lines without balance's ragged short lines. */
+  text-wrap: pretty;
 }
 
 p {

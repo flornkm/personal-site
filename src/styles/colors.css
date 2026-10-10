@@ -28,9 +28,11 @@
   /* Filled secondary controls (secondary button, contact pill, article back button). */
   --interactive-secondary: #d4d4d4;
   --interactive-secondary-hover: #c7c7c7;
+  --interactive-secondary-active: #bababa;
 
   --accent-primary: #171717;
   --accent-primary-hover: #262626;
+  --accent-primary-active: #333333;
   --accent-foreground: #ffffff;
 
   /* Illustration / blog-icon accent palette. Theme-independent (inherited into
@@ -94,9 +96,12 @@
 
     --interactive-secondary: #404040;
     --interactive-secondary-hover: #4a4a4a;
+    --interactive-secondary-active: #555555;
 
     --accent-primary: #ffffff;
     --accent-primary-hover: #e5e5e5;
+    /* Pressing continues the hover's direction: there is nothing brighter than a white fill. */
+    --accent-primary-active: #d4d4d4;
     --accent-foreground: #000000;
 
     --destructive: #ef4444;
@@ -133,10 +138,12 @@
   --background-color-surface-inverted: var(--surface-inverted);
   --background-color-accent-primary: var(--accent-primary);
   --background-color-accent-primary-hover: var(--accent-primary-hover);
+  --background-color-accent-primary-active: var(--accent-primary-active);
   --background-color-interactive-hover: var(--interactive-hover);
   --background-color-interactive-active: var(--interactive-active);
   --background-color-interactive-secondary: var(--interactive-secondary);
   --background-color-interactive-secondary-hover: var(--interactive-secondary-hover);
+  --background-color-interactive-secondary-active: var(--interactive-secondary-active);
   --background-color-destructive: var(--destructive);
   --background-color-warning: var(--warning);
   --background-color-success: var(--success);

@@ -137,7 +137,7 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
           style={{ fontWeight: 500 }}
         />
 
-        <MediaTimeRange className="mx-1 h-6 min-w-0 flex-1 bg-transparent [&::part(progress)]:rounded-full">
+        <MediaTimeRange className="mx-1 h-6 min-w-0 flex-1 bg-transparent [&::part(progress)]:rounded-full [&::part(buffered)]:rounded-full">
           <span slot="preview" className="pointer-events-none flex flex-col items-center">
             <span className="flex items-baseline gap-1 text-xs leading-none tabular-nums text-white">
               <MediaPreviewTimeDisplay className="bg-transparent p-0" />

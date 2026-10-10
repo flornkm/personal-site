@@ -155,7 +155,7 @@ function WritingPage() {
                 href={`/writing/${item.slug}`}
                 className="group/item flex items-center gap-4 py-3"
               >
-                <div className="flex size-12 shrink-0 items-center justify-center bg-image-card transition-colors duration-200 group-hover/item:bg-[#e7e7e7] dark:group-hover/item:bg-[#1c1c1c]">
+                <div className="flex size-12 shrink-0 items-center justify-center bg-image-card group-hover/item:bg-[#e7e7e7] dark:group-hover/item:bg-[#1c1c1c]">
                   <PostIcon slug={item.slug} className="size-6" />
                 </div>
                 <div className="flex min-w-0 flex-col gap-0.5">

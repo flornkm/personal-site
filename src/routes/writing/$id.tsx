@@ -1,6 +1,7 @@
 import { H1 } from "@/components/design-system/heading";
 import { useMdxContent } from "@/components/shared/mdx-content";
 import { Link } from "@/components/ui/link";
+import { StayInTouch } from "@/features/writing/components/stay-in-touch";
 import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
 import { runsInfiniteQueryOptions } from "@/features/writing/lib/runs";
 import { getContent, isWritingEntry, type WritingEntry } from "@/lib/mdx";
@@ -200,7 +201,7 @@ function WritingDetailPage() {
             <Link
               href="/writing"
               aria-label="Go back"
-              className="inline-flex size-6.5 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover"
+              className="inline-flex size-6.5 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover active:bg-interactive-secondary-active active:duration-0"
             >
               <IconArrowUndoUp mode="raw" className="size-4" />
             </Link>
@@ -211,7 +212,7 @@ function WritingDetailPage() {
             <Link
               href="/writing"
               aria-label="Go back"
-              className="inline-flex size-7.5 shrink-0 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover"
+              className="inline-flex size-7.5 shrink-0 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover active:bg-interactive-secondary-active active:duration-0"
             >
               <IconArrowUndoUp mode="raw" className="size-4" />
             </Link>
@@ -220,7 +221,10 @@ function WritingDetailPage() {
             <H1 className="text-sm">{item.title}</H1>
             <HeaderDate type={item.type} date={item.date} newestRunDate={item.newestRunDate} />
           </header>
-          <div className="pb-16 md:pb-24">{content}</div>
+          <div className="pb-16 md:pb-24">
+            {content}
+            <StayInTouch source={item.slug} />
+          </div>
         </div>
       </div>
     </div>

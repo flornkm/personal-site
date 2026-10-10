@@ -125,6 +125,7 @@ export function CopyAsMarkdown() {
         className={cn(
           "grid size-6 shrink-0 cursor-pointer place-items-center",
           "rounded-md text-quaternary transition-colors hover:bg-surface-tertiary hover:text-tertiary",
+          "active:bg-interactive-active active:duration-0",
           "outline-none focus-visible:ring-2 focus-visible:ring-default",
           "touch-manipulation select-none",
         )}

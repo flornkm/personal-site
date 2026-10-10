@@ -10,14 +10,16 @@ const sizeVariants = {
 } as const;
 
 export const buttonVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center whitespace-nowrap transition-all duration-150 font-medium disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex cursor-pointer items-center justify-center whitespace-nowrap transition-all duration-150 active:duration-0 font-medium disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        primary: "bg-accent-primary text-sm text-accent-foreground hover:bg-accent-primary-hover",
+        primary:
+          "bg-accent-primary text-sm text-accent-foreground hover:bg-accent-primary-hover active:bg-accent-primary-active",
         secondary:
-          "bg-interactive-secondary text-sm text-primary hover:bg-interactive-secondary-hover",
-        tertiary: "text-tertiary text-sm hover:text-secondary hover:bg-interactive-hover",
+          "bg-interactive-secondary text-sm text-primary hover:bg-interactive-secondary-hover active:bg-interactive-secondary-active",
+        tertiary:
+          "text-tertiary text-sm hover:text-secondary hover:bg-interactive-hover active:bg-interactive-active",
       },
       size: sizeVariants,
       iconOnly: {

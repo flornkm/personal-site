@@ -92,6 +92,7 @@ function CopyCode({
         className={cn(
           "grid size-6 shrink-0 cursor-pointer place-items-center",
           "rounded-lg text-quaternary transition-colors hover:bg-black/5 hover:text-tertiary dark:hover:bg-white/6",
+          "active:bg-black/8 active:duration-0 dark:active:bg-white/9",
           "outline-none focus-visible:ring-2 focus-visible:ring-default",
           "touch-manipulation select-none",
         )}

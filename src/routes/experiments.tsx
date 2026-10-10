@@ -582,6 +582,7 @@ function ExperimentTile({ experiment, isActive, morph, onOpen, onClose }: Experi
             className={cn(
               "absolute right-3 top-3 z-10 flex size-6 items-center justify-center rounded-sm",
               "text-neutral-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5",
+              "active:bg-black/8 active:duration-0 dark:active:bg-white/8",
               "cursor-pointer transition-colors",
               "outline-none focus-visible:ring-2 focus-visible:ring-default",
             )}

@@ -16,7 +16,7 @@ type WritingListItem = { slug: string; title: string; date: string; type: string
 const DESCRIPTION = "Writing contains thoughts, ideas, and experiences from Florian.";
 
 // Written but not ready to be listed yet. The post stays reachable at its own URL.
-const UNLISTED_SLUGS = new Set(["software-that-looks-better-used"]);
+const UNLISTED_SLUGS = new Set<string>();
 
 // Plain (non-server) function: getContent reads from a bundled eager glob, so it runs on
 // the client too. Wrapping it in createServerFn would force an RPC round-trip on every

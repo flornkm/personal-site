@@ -5,7 +5,9 @@ import { ComponentProps, ComponentType, ReactNode, useMemo, useState } from "rea
 import { thumbhashToDataURL } from "@/lib/thumbhash";
 import { videoManifest } from "@/videoMap.gen";
 import { CodeBlock } from "@/components/shared/code-block";
+import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
+import { VideoPlayer } from "@/components/ui/video-player";
 import { RunsFeed } from "@/features/writing/components/runs-feed";
 import { ModelViewer } from "../3d/model-viewer";
 import { Comparison } from "./comparison";
@@ -173,6 +175,49 @@ export function Video({
   );
 }
 
+function Player({ src, poster, caption }: { src: string; poster?: string; caption?: string }) {
+  const entry = videoManifest[src];
+
+  return (
+    // Capped so it stops growing with the column on wide screens.
+    <figure className="not-prose max-lg:-mx-4 mx-auto my-8 max-w-[640px]">
+      <div style={entry ? { aspectRatio: `${entry.width} / ${entry.height}` } : undefined}>
+        <VideoPlayer
+          src={src}
+          poster={poster}
+          className={cn(
+            "rounded-sm outline -outline-offset-1 outline-black/5 dark:outline-white/15",
+            entry && "aspect-auto h-full",
+          )}
+        />
+      </div>
+      {caption && (
+        <figcaption className="mt-4 font-serif text-[11px] font-normal italic text-primary lg:mx-auto lg:max-w-[460px]">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+// A call to action in a post: a large primary button that opens an external link. A <p> rather
+// than a <div>, so the article's text rail rules place it flush with the text.
+function ButtonLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <p className="not-prose my-8">
+      <Link
+        href={href}
+        target="_blank"
+        rel="noopener"
+        className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full")}
+      >
+        {/* Button's own label padding, so the link is the same size as a <Button size="lg">. */}
+        <span className="px-1">{children}</span>
+      </Link>
+    </p>
+  );
+}
+
 export function Model({
   src,
   height = 400,
@@ -293,6 +338,8 @@ export const mdxComponents = {
   Image,
   FigureImage,
   Video,
+  VideoPlayer: Player,
+  ButtonLink,
   Model,
   ModelViewer,
   SmartVideo,

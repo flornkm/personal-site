@@ -167,7 +167,7 @@ function Cheque({
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-[14px] bg-[oklch(0.975_0.005_250)] px-4 pt-3.5 pb-3 smooth-shadow-ring-md [--guilloche:oklch(0.6_0.02_250/0.07)] dark:bg-[oklch(0.24_0.012_250)] dark:[--guilloche:oklch(0.85_0.02_250/0.05)]"
+      className="relative w-full overflow-hidden rounded-[14px] bg-[oklch(0.975_0.005_250)] px-4 pt-3.5 pb-3 smooth-shadow-ring-xs [--guilloche:oklch(0.6_0.02_250/0.07)] dark:bg-[oklch(0.24_0.012_250)] dark:[--guilloche:oklch(0.85_0.02_250/0.05)]"
       style={{
         // Two faint crossing line sets: the security tint every cheque is printed on.
         backgroundImage:

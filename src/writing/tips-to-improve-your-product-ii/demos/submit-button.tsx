@@ -71,7 +71,7 @@ export function SubmitButton() {
           event.preventDefault();
           submit();
         }}
-        className="w-full max-w-[340px] rounded-[20px] bg-surface p-4 smooth-shadow-ring-md"
+        className="w-full max-w-[340px] rounded-[20px] bg-surface p-4 smooth-shadow-ring-xs"
       >
         <p className="text-[13px] leading-[18px] font-medium text-primary">Share Q4 Launch Plan</p>
         <p className="text-[13px] leading-[18px] text-tertiary">

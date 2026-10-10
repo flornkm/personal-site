@@ -1,6 +1,7 @@
 import { H1 } from "@/components/design-system/heading";
 import { useMdxContent } from "@/components/shared/mdx-content";
 import { Link } from "@/components/ui/link";
+import { StayInTouch } from "@/features/writing/components/stay-in-touch";
 import { fetchNewestRunDate } from "@/features/writing/lib/newest-run-date";
 import { runsInfiniteQueryOptions } from "@/features/writing/lib/runs";
 import { getContent, isWritingEntry, type WritingEntry } from "@/lib/mdx";
@@ -220,7 +221,10 @@ function WritingDetailPage() {
             <H1 className="text-sm">{item.title}</H1>
             <HeaderDate type={item.type} date={item.date} newestRunDate={item.newestRunDate} />
           </header>
-          <div className="pb-16 md:pb-24">{content}</div>
+          <div className="pb-16 md:pb-24">
+            {content}
+            <StayInTouch source={item.slug} />
+          </div>
         </div>
       </div>
     </div>

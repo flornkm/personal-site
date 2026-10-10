@@ -26,7 +26,34 @@ type VideoPlayerProps = {
 };
 
 const iconButtonClass =
-  "inline-flex h-8 items-center justify-center bg-transparent p-2 text-white transition-opacity hover:opacity-80";
+  "inline-flex size-8 items-center justify-center rounded-sm bg-transparent p-0 text-white transition-colors duration-150 hover:bg-white/10 active:bg-white/15";
+
+const swapIconClass =
+  "transition-[opacity,scale,filter] duration-200 ease-out motion-reduce:transition-none";
+
+// Tailwind needs every variant spelled out statically, so each toggle's hidden state is listed.
+const hiddenUnlessPaused =
+  "group-not-[[mediapaused]]/play:scale-50 group-not-[[mediapaused]]/play:opacity-0 group-not-[[mediapaused]]/play:blur-[2px]";
+const hiddenWhenPaused =
+  "group-[[mediapaused]]/play:scale-50 group-[[mediapaused]]/play:opacity-0 group-[[mediapaused]]/play:blur-[2px]";
+const hiddenUnlessMuted =
+  "group-not-[[mediavolumelevel=off]]/mute:scale-50 group-not-[[mediavolumelevel=off]]/mute:opacity-0 group-not-[[mediavolumelevel=off]]/mute:blur-[2px]";
+const hiddenWhenMuted =
+  "group-[[mediavolumelevel=off]]/mute:scale-50 group-[[mediavolumelevel=off]]/mute:opacity-0 group-[[mediavolumelevel=off]]/mute:blur-[2px]";
+const hiddenUnlessFullscreen =
+  "group-not-[[mediaisfullscreen]]/fullscreen:scale-50 group-not-[[mediaisfullscreen]]/fullscreen:opacity-0 group-not-[[mediaisfullscreen]]/fullscreen:blur-[2px]";
+const hiddenWhenFullscreen =
+  "group-[[mediaisfullscreen]]/fullscreen:scale-50 group-[[mediaisfullscreen]]/fullscreen:opacity-0 group-[[mediaisfullscreen]]/fullscreen:blur-[2px]";
+
+// Both icons go in the single "icon" slot, stacked, so they crossfade; media-chrome's per-state
+// slots display:none the inactive one and would cut instead.
+function SwapIcons({ children }: { children: React.ReactNode }) {
+  return (
+    <span slot="icon" className="grid size-3.5 *:col-start-1 *:row-start-1">
+      {children}
+    </span>
+  );
+}
 
 export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
   return (
@@ -51,8 +78,8 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
           "--media-font-family": "var(--font-sans, system-ui, sans-serif)",
           "--media-font-weight": "500",
           "--media-font-size": "13px",
-          "--media-button-icon-width": "20px",
-          "--media-button-icon-height": "20px",
+          "--media-button-icon-width": "14px",
+          "--media-button-icon-height": "14px",
         } as React.CSSProperties
       }
     >
@@ -66,21 +93,43 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
         className="h-full w-full object-cover"
       />
 
-      <MediaControlBar className="absolute right-0 bottom-0 left-0 flex items-center gap-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0.55)_45%,rgba(0,0,0,0.15)_80%,transparent_100%)] px-2 pt-28 pb-2">
-        <MediaPlayButton className={iconButtonClass}>
-          <IconPlay slot="play" ariaHidden />
-          <IconPause slot="pause" ariaHidden />
+      <MediaControlBar className="absolute right-0 bottom-0 left-0 flex items-center gap-0.5 bg-[linear-gradient(to_top,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0.55)_45%,rgba(0,0,0,0.15)_80%,transparent_100%)] px-2 pt-28 pb-2">
+        {/* Every icon is raw, not masked: media-chrome shows one slot and display:nones the
+            rest, and the masked build shares a single <mask> id across every copy of an icon
+            (also across players on one page). WebKit resolves the visible copy's mask to the
+            first, hidden one and paints a solid square instead. */}
+        <MediaPlayButton className={cn(iconButtonClass, "group/play")}>
+          <SwapIcons>
+            <IconPlay
+              size={14}
+              mode="raw"
+              ariaHidden
+              className={cn(swapIconClass, hiddenUnlessPaused)}
+            />
+            <IconPause
+              size={14}
+              mode="raw"
+              ariaHidden
+              className={cn(swapIconClass, hiddenWhenPaused)}
+            />
+          </SwapIcons>
         </MediaPlayButton>
 
-        <MediaMuteButton className={iconButtonClass}>
-          <IconMute slot="off" ariaHidden />
-          {/* Raw, not masked: media-chrome shows one slot and display:nones the rest, and the
-              masked build shares a single <mask> id across every copy of an icon. WebKit
-              resolves the visible copy's mask to the first, hidden one and paints a solid
-              square instead. */}
-          <IconVolumeFull slot="low" mode="raw" ariaHidden />
-          <IconVolumeFull slot="medium" mode="raw" ariaHidden />
-          <IconVolumeFull slot="high" mode="raw" ariaHidden />
+        <MediaMuteButton className={cn(iconButtonClass, "group/mute")}>
+          <SwapIcons>
+            <IconMute
+              size={14}
+              mode="raw"
+              ariaHidden
+              className={cn(swapIconClass, hiddenUnlessMuted)}
+            />
+            <IconVolumeFull
+              size={14}
+              mode="raw"
+              ariaHidden
+              className={cn(swapIconClass, hiddenWhenMuted)}
+            />
+          </SwapIcons>
         </MediaMuteButton>
 
         <MediaTimeDisplay
@@ -109,9 +158,21 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
           <IconPictureInPicture slot="exit" mode="raw" ariaHidden />
         </MediaPipButton>
 
-        <MediaFullscreenButton className={iconButtonClass}>
-          <IconExpand45 slot="enter" ariaHidden />
-          <IconMinimize45 slot="exit" ariaHidden />
+        <MediaFullscreenButton className={cn(iconButtonClass, "group/fullscreen")}>
+          <SwapIcons>
+            <IconExpand45
+              size={14}
+              mode="raw"
+              ariaHidden
+              className={cn(swapIconClass, hiddenWhenFullscreen)}
+            />
+            <IconMinimize45
+              size={14}
+              mode="raw"
+              ariaHidden
+              className={cn(swapIconClass, hiddenUnlessFullscreen)}
+            />
+          </SwapIcons>
         </MediaFullscreenButton>
       </MediaControlBar>
     </MediaController>

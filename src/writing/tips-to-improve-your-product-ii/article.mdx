@@ -1,0 +1,60 @@
+---
+title: Tips to improve your product II
+description: More tips, and a few small details, that make the web a better, more fun place to be in.
+date: 2026-10-10
+type: note
+---
+
+import { NumberInputScroll } from "./demos/number-input-scroll";
+import { SubmitButton } from "./demos/submit-button";
+import { HeldOrder } from "./demos/held-order";
+import { EscapeLayers } from "./demos/escape-layers";
+import { SelectOnFocus } from "./demos/select-on-focus";
+
+# Tips to improve your product II
+
+## Number inputs change when you scroll
+
+A focused number input quietly changes its value when you scroll over it, so people edit amounts without noticing. Click an amount, then scroll the checkbook with the cursor still over it.
+
+<NumberInputScroll />
+
+```html
+<!-- Before -->
+<input type="number" />
+
+<!-- After -->
+<input type="text" inputmode="decimal" />
+```
+
+<br />
+
+## Don't reorder a list under the cursor
+
+Lists that sort themselves live, like who spoke last, move rows away right as you go to click them. Try to mute Jonas while he keeps talking.
+
+<HeldOrder />
+
+<br />
+
+## Don't disable the submit button
+
+A disabled button never tells you what's missing, it just ignores the click. Click _Invite_ with the address as it is and compare both modes.
+
+<SubmitButton />
+
+<br />
+
+## Escape closes only the top layer
+
+Escape should close whatever sits on top, not everything behind it too. Open the Repeat menu, then press Esc and see what stays open.
+
+<EscapeLayers />
+
+<br />
+
+## Select the value when a field is clicked
+
+When a field is clicked, people usually want to replace the value, not edit it. Click into W and type 320.
+
+<SelectOnFocus />

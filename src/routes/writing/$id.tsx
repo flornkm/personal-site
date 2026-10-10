@@ -200,7 +200,7 @@ function WritingDetailPage() {
             <Link
               href="/writing"
               aria-label="Go back"
-              className="inline-flex size-6.5 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover"
+              className="inline-flex size-6.5 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover active:bg-interactive-secondary-active active:duration-0"
             >
               <IconArrowUndoUp mode="raw" className="size-4" />
             </Link>
@@ -211,7 +211,7 @@ function WritingDetailPage() {
             <Link
               href="/writing"
               aria-label="Go back"
-              className="inline-flex size-7.5 shrink-0 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover"
+              className="inline-flex size-7.5 shrink-0 items-center justify-center rounded-sm bg-interactive-secondary text-primary transition-colors hover:bg-interactive-secondary-hover active:bg-interactive-secondary-active active:duration-0"
             >
               <IconArrowUndoUp mode="raw" className="size-4" />
             </Link>
